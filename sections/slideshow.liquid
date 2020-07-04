@@ -1,0 +1,465 @@
+<!-- /sections/slideshow.liquid -->
+
+{% assign transition = section.settings.transition %}
+{% assign autoplay = section.settings.autoplay %}
+{% assign duration = section.settings.duration | times: 1000 %}
+{% assign dots_position = section.settings.dots_position %}
+{% assign slides_count = section.blocks.size %}
+
+<div data-section-id="{{ section.id }}" data-section-type="slider" data-slides-count="{{ section.blocks.size }}" data-autoplay="{{ autoplay }}" data-duration="{{ duration }}" data-text-position="slider-text-block" data-image-height="{{ section.settings.slide_height }}" data-page-dots="{{ section.settings.show_nav_dots }}" data-nav-arrows="{{ section.settings.show_nav_arrows }}" data-transition="{{ transition }}" data-slides="{{ slides_count }}">
+	<div class="slider slider--{{ transition }} slider--dots-{{ dots_position }}">
+		{% if section.blocks.size > 0 %}
+			<div class="slide-block">
+				<div class="flickity">
+					{% for block in section.blocks %}
+						{% assign color_buttons = block.settings.color_buttons | default: settings.color_buttons %}
+						{% assign color_buttons_border = block.settings.color_buttons_border | default: settings.color_buttons_border %}
+						{% assign color_buttons_text = block.settings.color_buttons_text | default: settings.color_buttons_text %}
+
+						{% assign overlayOpacity = block.settings.overlay_opacity | prepend: '.' %}
+
+						{% if block.settings.slide_btn_link != blank %}
+							{% assign btn_link =  block.settings.slide_btn_link  %}
+						{% else %}
+							{% assign btn_link = "#!" %}
+						{% endif %}
+
+						{% if block.settings.slide_btn_link_2 != blank %}
+							{% assign btn_link_2 =  block.settings.slide_btn_link_2  %}
+						{% else %}
+							{% assign btn_link_2 = "#!" %}
+						{% endif %}
+
+						<div class="item item--{{ block.id }} item--{{ block.settings.content_alignment }} item--{{ block.settings.text_color }} item--{{ block.settings.content_width }} initial-slide" {{ block.shopify_attributes }} data-slide-position="{{ forloop.index }}" data-style="{{ block.settings.text_color }}">
+							{%- if block.settings.slide_btn_text != blank or block.settings.slide_btn_text_2 != blank -%}
+								<style>
+									.item--{{ block.id }} .slider-cta .btn { color: {{ color_buttons_text }}; background: {{ color_buttons }}; border-color: {{ color_buttons_border }}; }
+									.item--{{ block.id }} .slider-cta .btn:hover { color: {{ color_buttons_text | color_darken: 10 }}; background: {{ color_buttons | color_darken: 10 }}; border-color: {{ color_buttons_border | color_darken: 10 }}; }
+								</style>
+							{%- endif -%}
+							
+						 	<div class="overlay overlay--{{section.settings.slide_height}}" style="background-color:{{ block.settings.hero_overlay_color }} !important; opacity:{{ overlayOpacity }};"></div>
+
+							{% if section.settings.slide_height == 'original-height' and block.settings.image != blank %}
+
+								{% comment %} Mobile image {% endcomment %}
+								{% if block.settings.image_mobile != blank %}
+									{% assign image = block.settings.image_mobile %}
+									{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+									{% include 'theme-rias' %}
+									<img 
+										 class="image-mobile lazyload"
+										 data-flickity-lazyload="{{ image | img_url: '2048x' }}"
+										 data-src="{{ image_url_pattern }}"
+										 data-widths= "[{{ image_widths }}]"
+										 data-aspectratio="{{image.aspect_ratio }}"
+										 data-sizes="auto"
+										 alt="{{ image.alt | escape }}">
+									<span class="loader"></span>
+									<noscript class="image-mobile">
+										<img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}" class="image-mobile">
+									</noscript>
+								{% endif %}
+
+								{% comment %} Desktop image {% endcomment %}
+								{% assign image = block.settings.image %}
+								{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+								{% include 'theme-rias' %}
+								<img 
+									 class="image-desktop lazyload"
+									 data-flickity-lazyload="{{ image | img_url: '2048x' }}"
+									 data-src="{{ image_url_pattern }}"
+									 data-widths= "[{{ image_widths }}]"
+									 data-aspectratio="{{image.aspect_ratio }}"
+									 data-sizes="auto"
+									 alt="{{ image.alt | escape }}">
+								<span class="loader"></span>
+								<noscript class="image-desktop">
+									<img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}" class="image-desktop">
+								</noscript>
+							{% endif %}
+						
+							<div class="slider-text-block">
+								{% if block.settings.slide_heading != blank %}
+									<h1 class="slide__heading main-heading size--{{ block.settings.heading_font_size }}">{{ block.settings.slide_heading | escape }}</h1>
+								{% endif %}
+								{% if block.settings.slide_subheading != blank %}
+									<h2 class="slide__caption main-subheading size--{{ block.settings.text_font_size }}">{{ block.settings.slide_subheading | escape | newline_to_br }}</h2>
+								{% endif %}
+
+								<div class="slider-cta">
+								{% if block.settings.slide_btn_text != blank %}
+									<a class="btn call-to-action slider-btn" href="{{ btn_link }}">{{ block.settings.slide_btn_text | escape }}</a>
+								{% endif %}
+								{% if block.settings.slide_btn_text_2 != blank %}
+									<a class="btn call-to-action slider-btn" href="{{ btn_link_2 }}">{{ block.settings.slide_btn_text_2 | escape }}</a>
+								{% endif %}
+								{% if block.settings.video_btn_text != blank %}
+									<a class="video-text-link secondary-call-to-action" href="{{ block.settings.video_btn_link }}">
+										<i class="custom-icon-play-button call-to-action-circle"></i>
+										<span>{{ block.settings.video_btn_text }}</span>
+									</a>
+								{% endif %}
+								</div>
+							</div>
+
+							{% unless block.settings.image == blank %}
+								{% if section.settings.slide_height != 'original-height' %}
+
+									{% comment %} Mobile image {% endcomment %}
+									{% unless block.settings.image_mobile == blank %}
+									<div class="slides slide--{{block.id}} {{ section.settings.slide_height }} {{ section.settings.slide_height }}--{{section.id}} {{ block.settings.bg_position }} slide-background image-mobile lazyload"      
+										data-bgset="{% include 'bgset', image: block.settings.image_mobile %}"
+										data-sizes="auto"
+										data-parent-fit="cover">
+									</div>
+									<span class="loader"></span>
+									{% endunless %}
+
+									{% comment %} Desktop image {% endcomment %}
+									<div class="slides slide--{{block.id}} {{ section.settings.slide_height }} {{ section.settings.slide_height }}--{{section.id}} {{ block.settings.bg_position }} slide-background image-desktop lazyload"
+										data-bgset="{% include 'bgset', image: block.settings.image %}"
+										data-sizes="auto"
+										data-parent-fit="cover">
+									</div>
+									<span class="loader"></span>
+								{% endif %}
+									<noscript>
+										<style>
+											.slide--{{block.id}} {
+												 background: url({{ block.settings.image | img_url: '2048x' }})
+												 no-repeat center center;
+												 background-size: cover;"
+											}
+
+											{% unless block.settings.image_mobile == blank %}
+											@media screen and (max-width: 767px) {
+												.slide--{{ block.id }} {
+													background: url({{ block.settings.image_mobile | img_url: '2048x' }})
+												}
+											}
+											{% endunless %}
+										</style>
+									</noscript>
+							{% else %}            
+							 <div class="slides placeholder-bg {% unless section.settings.slide_height == 'original-height' %} {{ section.settings.slide_height }} {% else %} seven-fifty-height-hero {% endunless %} slide-background" style="background-image: url(' {% include 'placeholder_svg_uri', placeholder : 'lifestyle-1' %} ');"></div>
+							{% endunless %}
+						</div>
+					{% endfor %}
+
+				</div>
+			</div>
+
+			{% if section.settings.show_nav_arrows and section.blocks.size > 1 %}
+				<div class="slider__arrow slider__arrow--previous"><span class="custom-icon-arrow-right" aria-hidden="true"></span></div>
+				<div class="slider__arrow slider__arrow--next"><span class="custom-icon-arrow-right" aria-hidden="true"></span></div>
+			{% endif %}
+		{% endif %}
+
+		{% if section.settings.show_arrow_down %}
+			<a href="#" class="slider__scroll-down js-scroll-down" title="{{ 'homepage.onboarding.slideshow.scroll_down' | t }}">
+				{%- include 'icon-arrow-right' -%}
+			</a>
+		{% endif %}
+	</div>
+</div>
+
+{% schema %}
+{
+	"name": "Slideshow",
+	"max_blocks": 10,
+	"class": "slideshow",
+	"settings": [
+		{
+			"type": "checkbox",
+			"id": "show_nav_dots",
+			"label": "Show slide navigation dots",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "show_nav_arrows",
+			"label": "Show slide navigation arrows",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "autoplay",
+			"label": "Autoplay slideshow",
+			"default": false
+		},
+		{
+			"type": "select",
+			"id": "transition",
+			"label": "Transition style",
+			"default": "slide",
+			"options": [
+				{ "label": "Slide", "value": "slide" },
+				{ "label": "Fade", "value": "fade" },
+				{ "label": "Zoom out", "value": "zoom-out" }
+			]
+		},
+		{
+			"type": "range",
+			"id": "duration",
+			"min": 2,
+			"max": 5,
+			"step": 1,
+			"unit": "sec",
+			"label": "Change slides every",
+			"default": 4
+		},
+		{
+			"type": "select",
+			"id": "dots_position",
+			"label": "Dots position",
+			"default": "center",
+			"options": [
+				{ "label": "Left", "value": "left" },
+				{ "label": "Center", "value": "center" },
+				{ "label": "Right", "value": "right" }
+			]
+		},
+		{
+			"type": "select",
+			"id": "slide_height",
+			"label": "Slide height",
+			"default": "one-hundred-height-hero",
+			"options": [
+				{
+					"value": "one-hundred-height-hero",
+					"label": "Full screen height"
+				},
+				{
+					"value": "original-height",
+					"label": "Image height"
+				},
+				{
+					"value": "seven-fifty-height-hero",
+					"label": "750px"
+				},
+				{
+					"value": "sixty-fifty-height-hero",
+					"label": "650px"
+				},
+				{
+					"value": "five-fifty-height-hero ",
+					"label": "550px"
+				},
+				{
+					"value": "four-fifty-height-hero",
+					"label": "450px"
+				}
+			]
+		},
+		{
+			"type": "checkbox",
+			"id": "show_arrow_down",
+			"label": "Show down arrow",
+			"default": false
+		}
+	],
+	"blocks": [
+		{
+			"type": "image",
+			"name": "Slide",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Image",
+					"info": "2048px width recommended"
+				},
+				{
+					"type": "image_picker",
+					"id": "image_mobile",
+					"label": "Image mobile",
+					"info": "Desktop image will be used if not set"
+				},
+				{
+					"type": "select",
+					"id": "bg_position",
+					"label": "Image position",
+					"default": "bg-pos-center-center",
+					"options": [
+						{ "label": "Top", "value": "bg-pos-top-center" },
+						{ "label": "Right", "value": "bg-pos-right-center" },
+						{ "label": "Center", "value": "bg-pos-center-center" },
+						{ "label": "Left", "value": "bg-pos-left-center" },
+						{ "label": "Bottom", "value": "bg-pos-bottom-center" }
+					]
+				},
+				{
+					"type": "select",
+					"id": "content_alignment",
+					"label": "Slide content alignment",
+					"default": "center",
+					"options": [
+						{ "value": "left", "label": "Left" }, 
+						{ "value": "center", "label": "Center" },
+						{ "value": "right", "label": "Right" },
+						{ "value": "bottom-left", "label": "Bottom left" },
+						{ "value": "bottom-right", "label": "Bottom right" }
+					]
+				},
+				{
+					"type": "select",
+					"id": "content_width",
+					"label": "Slide content width",
+					"default": "full-width",
+					"options": [
+						{ "value": "one-third", "label": "35%" },
+						{ "value": "one-half", "label": "50%" },
+						{ "value": "full-width", "label": "75%" }
+					]
+				},
+				{
+					"type": "select",
+					"id": "text_color",
+					"label": "Color",
+					"default": "text-light",
+					"options": [
+						{
+							"value": "text-light",
+							"label": "Light"
+						},
+						{
+							"value": "text-dark",
+							"label": "Dark"
+						}
+					]
+				},
+				{
+					"type": "text",
+					"id": "slide_heading",
+					"label": "Heading",
+					"default": "Welcome to Palo Alto"
+				},
+				{
+					"type": "textarea",
+					"id": "slide_subheading",
+					"label": "Subheading",
+					"default": "This subheading helps you provide some more detail to the title above."
+				},
+				{
+					"type": "text",
+					"id": "slide_btn_text",
+					"label": "Button text",
+					"default": "Welcome"
+				},
+				{
+					"type": "url",
+					"id": "slide_btn_link",
+					"label": "Button URL"
+				},
+				{
+					"type": "text",
+					"id": "slide_btn_text_2",
+					"label": "Second button text"
+				},
+				{
+					"type": "url",
+					"id": "slide_btn_link_2",
+					"label": "Second button URL"
+				},
+				{
+					"type": "text",
+					"id": "video_btn_text",
+					"label": "Video button text",
+					"default": "Watch the Video"
+				},
+				{
+					"type": "video_url",
+					"id": "video_btn_link",
+					"label": "Video URL",
+					"accept": [
+						"youtube",
+						"vimeo"
+					],
+					"default": "https://www.youtube.com/watch?v=_9VUPq3SxOc"
+				},
+				{
+					"type": "header",
+					"content": "Buttons colors"
+				},
+				{
+					"type": "color",
+					"id": "color_buttons",
+					"label": "Background",
+					"default": "#27afc2"
+				},
+				{
+					"type": "color",
+					"id": "color_buttons_border",
+					"label": "Border",
+					"default": "#27afc2"
+				},
+				{
+					"type": "color",
+					"id": "color_buttons_text",
+					"label": "Text",
+					"default": "#ffffff"
+				},
+				{
+					"type": "header",
+					"content": "Typography"
+				},
+				{
+					"type": "range",
+					"id": "heading_font_size",
+					"label": "Heading size",
+					"unit": "px",
+					"step": 4,
+					"min": 40,
+					"max": 64,
+					"default": 48
+				},
+				{
+					"type": "range",
+					"id": "text_font_size",
+					"label": "Text size",
+					"unit": "px",
+					"step": 2,
+					"min": 16,
+					"max": 28,
+					"default": 20
+				},
+				{
+					"type": "header",
+					"content": "Overlay"
+				},
+				{
+					"type": "color",
+					"id": "hero_overlay_color",
+					"label": "Color",
+					"default": "#000"
+				},
+				{
+					"type": "range",
+					"id": "overlay_opacity",
+					"label": "Opacity",
+					"min": 0,
+					"max": 95,
+					"step": 5,
+					"unit": "%",
+					"default": 30
+				}
+			]
+		}
+	],
+	"presets": [
+		{
+			"name": "Slideshow",
+			"category": "Image",
+			"blocks": [
+				{
+					"type": "image"
+				},
+				{
+					"type": "image"
+				}
+			]
+		}
+	]
+}
+{% endschema %}

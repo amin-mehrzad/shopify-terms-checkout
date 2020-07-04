@@ -1,0 +1,13 @@
+{% comment %}
+  Logic to set the grid size
+{% endcomment %}
+{% assign num_rows = settings.product_grid_columns %}
+{% if num_rows == 1 %}
+  {% assign grid_item_width = 'small--one-whole medium--one-whole large--one-whole' %}
+{% elsif num_rows == 2 %}
+  {% assign grid_item_width = 'small--one-whole medium--one-half large--one-half' %}
+{% elsif num_rows == 3 %}
+  {% assign grid_item_width = 'small--one-whole medium--one-half large--one-third' %}
+{% elsif num_rows == 4 %}
+  {% assign grid_item_width = 'small--one-whole medium--one-half large--one-quarter' %}
+{% endif %}

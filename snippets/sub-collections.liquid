@@ -1,0 +1,61 @@
+{%- for link in linklists.main-menu.links -%}
+  {%- if link.active and link.links.size > 0 -%}
+    {%- capture sub_collections -%}
+      {%- for sub_link in link.links limit: subcollections_per_row -%}
+        {%- assign link_parts = sub_link.url | split: '/' -%}
+        {%- assign sub_collection_handle = link_parts.last -%}
+        {%- assign sub_collection = collections[sub_collection_handle] -%}
+
+        {%- if sub_collection != blank -%}
+          <div class="subcollection__item">
+            <a href="{{ sub_collection.url }}" class="subcollection__item-image lazyload" data-bgset="{% include 'bgset', image: sub_collection.image %}" data-sizes="auto">
+              <h3 class="subcollection__item-title"><span>{{ sub_collection.title }}</span></h3>
+            </a>
+            <span class="loader"></span>
+            <noscript>
+              <a href="{{ sub_collection.url }}" class="subcollection__item-image no-js-image" style="background-image: url({{ sub_collection.image | img_url: '1024x' }});">
+                <h3 class="subcollection__item-title"><span>{{ sub_collection.title }}</span></h3>
+              </a>
+            </noscript>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+  {%- endif -%}
+
+  {%- if link.child_active and link.links.size > 0 -%}
+    {%- capture sub_collections -%}
+      {%- for sub_link in link.links -%}
+        {%- if sub_link.active and sub_link.links.size > 0 -%}
+          {%- for sub_sub_link in sub_link.links limit: subcollections_per_row -%}
+            {%- assign sub_link_parts = sub_sub_link.url | split: '/' -%}
+            {%- assign sub_collection_handle = sub_link_parts.last -%}
+            {%- assign sub_collection = collections[sub_collection_handle] -%}
+
+            {%- if sub_collection != blank -%}
+              <div href="{{ sub_collection.url }}" class="subcollection__item">
+                <a href="{{ sub_collection.url }}" class="subcollection__item-image lazyload" data-bgset="{% include 'bgset', image: sub_collection.image %}" data-sizes="auto">
+                  <h3 class="subcollection__item-title"><span>{{ sub_collection.title }}</span></h3>
+                </a>
+                <span class="loader"></span>
+                <noscript>
+                <a href="{{ sub_collection.url }}" class="subcollection__item-image no-js-image" style="background-image: url({{ sub_collection.image | img_url: '1024x' }});">
+                  <h3 class="subcollection__item-title"><span>{{ sub_collection.title }}</span></h3>
+                </a>
+              </noscript>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if sub_collections != blank -%}
+  <div class="subcollections subcollections--{{ subcollectionsPosition }}">
+    <div class="subcollections__list subcollections__list--{{ subcollections_per_row }}">
+      {{ sub_collections }}
+    </div>
+  </div>
+{%- endif -%}

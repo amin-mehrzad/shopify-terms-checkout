@@ -1,0 +1,48 @@
+<div
+{% if api_key != blank %}
+  data-section-type="map" 
+  data-key="{{ api_key }}"
+  data-address = "{{ map_address }}"
+  data-section-id="{{ section_id }}"
+  data-style="{{ style }}"
+  data-zoom="{{ zoom }}"
+{% endif %}
+>
+  <div class="map__background {{ map_height }} {% if background_image == blank %}map__background--onboarding{% elsif background_image != blank and map_height != 'original-height' %}lazyload{% endif %}"
+    {% if background_image != blank and map_height != 'original-height' %}
+      data-bgset="{% include 'bgset', image: background_image %}"
+      data-sizes="auto"
+      data-parent-fit="cover"
+    {% elsif background_image == blank %}
+      style="background-image: url(' {% include 'placeholder_svg_uri', placeholder : 'lifestyle-2' %}')"
+    {% endif %}
+  >
+    {% if background_image != blank and map_height == 'original-height' %}
+      {% assign image = background_image %}
+      {% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+      {% include 'theme-rias' %}
+      <img 
+         class="lazyload"
+         data-src="{{ image_url_pattern }}"
+         data-widths= "[{{ image_widths }}]"
+         data-aspectratio="{{image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="{{ image.alt | escape }}">
+      <span class="loader"></span>
+      <noscript>
+        <img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}">
+      </noscript>
+    {% endif %}
+
+    {% if api_key != blank %}
+      <div class="map map--{{ section_id }}"></div>
+    {% endif %}
+  </div>
+  
+  {% if location_title != blank or address != blank %}
+  <div class="map__info grid--full" style="background-color:{{card_color}};">
+    <div class="grid__item large--one-half medium-down--one-half map__info_title {{location_title_size}}">{{ location_title }}</div>
+    <div class="grid__item large--one-half medium-down--one-half map__info_container">{{ address }}</div>
+  </div>
+  {% endif %}
+</div>

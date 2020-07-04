@@ -1,0 +1,689 @@
+<!-- /sections/product-template.liquid -->
+
+{% comment %}
+Rich snippets
+{% endcomment %}
+
+<style>.template-product { background-color: {{ section.settings.bg_color | default: '#fff' }}; }</style>
+<div itemscope itemtype="http://schema.org/Product">
+	<meta itemprop="name" content="{{ product.title }}">
+	<meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+	<meta itemprop="image" content="{{ product.featured_image.src | img_url: '800x' }}">
+
+	{% assign enable_reviews = settings.enable_reviews %}
+	{% assign enable_swatches = settings.color_swatches %}
+	{% assign tab_1 = section.settings.page_tab_1 %}
+	{% assign tab_2 = section.settings.page_tab_2 %}
+	{% assign tab_3 = section.settings.page_tab_3 %}
+
+	{% comment %}
+	Establish thumbnail grid
+	{% endcomment %}
+	{% assign thumbnailLength = product.images | size %}
+
+	{% comment %}
+	Hide if there are no variant images
+	{% endcomment %}
+	{% assign thumbnailColumns = 'grid__item large--hide medium-down--hide' %}
+	{% if thumbnailLength == 1 %}
+		{% assign thumbnailColumns = 'grid__item large--hide medium-down--hide' %}
+	{% elsif thumbnailLength == 2 %}
+		{% assign thumbnailColumns = 'grid__item push--large--one-quarter large--one-quarter medium-down--one-half' %}
+	{% elsif thumbnailLength == 3 %}
+		{% assign thumbnailColumns = 'grid__item one-third' %}
+	{% elsif thumbnailLength > 3 %}
+		{% assign thumbnailColumns = 'grid__item one-quarter' %}
+	{% endif %}
+
+	{% comment %}
+	Get first variant, or deep linked one
+	{% endcomment %}
+	{% assign current_variant = product.selected_or_first_available_variant %}
+	<div class="grid--full product-single wrapper product--{{ section.id }}" data-section-type="product-template" data-section-id="{{ section.id }}" data-reviews="{{ enable_reviews }}" data-swatches="{{ enable_swatches }}">
+		<div class="grid__item">
+
+			{%- if section.settings.show_breadcrumbs -%}
+				{%- include 'breadcrumbs' -%}
+			{%- endif -%}
+
+			<!-- Product Photos -->
+			<div class="grid">
+				<div class="grid__item product-images large--one-half text-center">
+					<div class="product-single__photos" id="ProductPhoto">
+						
+						{% assign image_gallery = section.settings.image_gallery %}
+						{% assign image_gallery_class = '' %}
+						{% if image_gallery == 'zoom' %}
+							{% assign image_gallery_class = 'hover-zoom' %}
+						{% elsif image_gallery == 'lightbox' %}
+							{% assign image_gallery_class = 'mfp-zoom-in-cur' %}
+						{% endif %}
+
+						<div class="product-images__slider" data-gallery="{{ image_gallery }}">
+
+							{% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+							{% assign image = featured_image %}
+							{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+							{% include 'theme-rias' %}
+							<div class="product-images__slide" data-image-id="{{ image.id }}">
+								<img 
+									 class="{{ image_gallery_class }} productvarimg featured-image featured-image--{{ section.id }} lazyload"
+									 {% if image_gallery == 'lightbox' %}
+										data-mfp-src ="{{ image.src | img_url: '2048x' }}"
+									 {% elsif image_gallery == 'zoom' %}
+										data-zoom="{{ image.src | img_url: '2048x' }}"
+									 {% endif %}
+									 src="{{ image | img_url: '32x' }}"
+									 data-src="{{ image_url_pattern }}"
+									 data-widths= "[{{ image_widths }}]"
+									 data-aspectratio="{{ image.aspect_ratio }}"
+									 data-sizes="auto"
+									 alt="{{ image.alt | escape }}">
+								<span class="loader"></span>
+								<noscript>
+								 <img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}" class="{{ image_gallery_class }} productvarimg featured-image featured-image--{{ section.id }}" id="{{ image.id }}">
+								</noscript>
+							</div>
+
+							{% assign featured_image_id = featured_image.id %}
+							{% for image in product.images %}
+								{% if image.id != featured_image_id %}
+									{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+									{% include 'theme-rias' %}
+									<div class="product-images__slide" data-image-id="{{ image.id }}">
+										<img 
+											 class="{{ image_gallery_class }} featured-image featured-image--{{ section.id }} lazyload"
+											 {% if image_gallery == 'lightbox' %}
+												data-mfp-src ="{{ image.src | img_url: '2048x' }}"
+											 {% elsif image_gallery == 'zoom' %}
+												data-zoom ="{{ image.src | img_url: '2048x' }}"
+											 {% endif %}
+											 
+											 id="{{image.id}}"
+									 		 src="{{ image | img_url: '32x' }}"
+											 data-flickity-lazyload="{{ image_url_pattern }}"
+											 data-src="{{ image_url_pattern }}"
+											 data-widths= "[{{ image_widths }}]"
+											 data-aspectratio="{{ image.aspect_ratio }}"
+											 data-sizes="auto"
+											 alt="{{ image.alt | escape }}">
+										<span class="loader"></span>
+										<noscript>
+											<img src="{{ image.src | img_url: '2048x' }}" alt="{{ image.alt | escape }}" id="{{ image.id }}" class="{{ image_gallery_class }} featured-image featured-image--{{section.id}}"> 
+										</noscript>
+									</div>
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+					
+					<!-- Product Thumbnails -->
+					{% if product.images.size > 1 %}
+					{% if section.settings.product_image_width == 'one' %}
+						{% assign thumbs_width = 'large--one-third push--large--one-third medium-down--one-whole' %}
+					{% endif %}
+						<div id="ProductThumbs">
+							<div class="product-images__thumbs">
+								{% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+								{% assign image = featured_image %}
+								{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+								{% include 'theme-rias' %}
+								<div class="product-images__thumbs-slide">
+									<img 
+										 class="product-single__thumbnail lazyload"
+										 data-src="{{ image_url_pattern }}"
+										 data-widths= "[{{ image_widths }}]"
+										 data-aspectratio="{{ image.aspect_ratio }}"
+										 data-sizes="auto"
+										 alt="{{ image.alt | escape }}">
+									<span class="loader"></span>
+									<noscript>
+									 <img src="{{ image | img_url: 'original' }}" alt="{{ image.alt | escape }}" class="product-single__thumbnail lazyload">
+									</noscript>
+								</div>
+
+								{% assign featured_image_id = featured_image.id %}
+								{% for image in product.images %}
+									{% if image.id != featured_image_id %}
+										{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+										{% include 'theme-rias' %}
+										<div class="product-images__thumbs-slide">
+											<img 
+												 class="product-single__thumbnail lazyload"
+												 data-src="{{ image_url_pattern }}"
+												 data-widths= "[{{ image_widths }}]"
+												 data-aspectratio="{{ image.aspect_ratio }}"
+												 data-sizes="auto"
+												 alt="{{ image.alt | escape }}">
+											<span class="loader"></span>
+											<noscript>
+												<img src="{{ image.src | img_url: 'original' }}" alt="{{ image.alt | escape }}" class="product-single__thumbnail"> 
+											</noscript>
+										</div>
+									{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+					{% endif %}
+				</div>
+
+				<!-- Product Description -->
+				<div class="grid__item large--one-half product-description-wrapper {% if section.settings.text_alignment == 'text-center' %}text-center{% else %}text-left{% endif %}">
+					{% if section.settings.enable_vendor %}
+						<p class="product-vendor">{{ product.vendor }}</p>
+					{% endif %}
+
+					<h1 class="product-title" itemprop="name">{{ product.title }}</h1>
+
+					{%- if enable_reviews or settings.enable_yotpo and settings.yotpo_ID != '' -%}
+		              <div class="product__badge">
+		                {%- if settings.enable_yotpo and settings.yotpo_ID != '' -%}
+		                  <div class="yotpo bottomLine" data-product-id="{{ product.id }}"></div>
+		                {%- elsif enable_reviews -%}
+		                  <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+		                {%- endif -%}
+		              </div>
+		            {%- endif -%}
+
+					<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+						<meta itemprop="priceCurrency" content="{{ shop.currency }}">
+						<link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+						<!-- Product Form Snippet -->
+						{% include 'product-form' %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script type="application/json" id="ProductJson-{{ section.id }}">
+	{{ product | json }}
+</script>
+
+<script>
+	window.product = {{ product | json }};
+	window.product.money_format = "{{ shop.money_format }}";
+	window.product.add_label = {% if product.options.size == 1 %}true{% else %}false{% endif %};
+	window.product.label = "{{ product.options.first | escape }}";
+	window.selectCallback = PaloAlto.onVariantSelected;
+</script>
+
+{% include 'block-sections' %}
+
+{% schema %}
+{
+	"name": "Product pages",
+	"settings": [
+	    {
+			"type": "header",
+			"content": "Colors"
+	    },
+	    {
+			"type": "color",
+			"id": "bg_color",
+			"label": "Background",
+			"default": "#fff"
+	    },
+		{
+			"type": "header",
+			"content": "Layout"
+		},
+		{
+			"type": "checkbox",
+			"id": "show_breadcrumbs",
+			"label": "Show breadcrumbs",
+			"default": true
+		},
+		{
+			"type": "select",
+			"id": "image_gallery",
+			"label": "Image gallery",
+			"options": [
+				{
+					"value": "none",
+					"label": "None"
+				},
+				{
+					"value": "zoom",
+					"label": "Hover to zoom"
+				},
+				{
+					"value": "lightbox",
+					"label": "Lightbox"
+				}
+			],
+			"default": "zoom"
+		},
+		{
+			"type": "select",
+			"label": "Text alignment",
+			"id": "text_alignment",
+			"options": [
+				{
+					"value": "text-left",
+					"label": "Left"
+				},
+				{
+					"value": "text-center",
+					"label": "Center"
+				}
+			]
+		},
+		{
+			"type": "checkbox",
+			"id": "enable_social_sharing_products",
+			"label": "Show social sharing buttons",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "enable_vendor",
+			"label": "Show vendor",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "hide_quantity",
+			"label": "Hide quantity",
+			"default": false
+		},
+		{
+			"type": "header",
+			"content": "Tabs",
+			"info": "You have the option to enable three extra tabs for more information on your product."
+		},
+		{
+			"type": "page",
+			"id": "page_tab_1",
+			"label": "Tab one"
+		},
+		{
+			"type": "page",
+			"id": "page_tab_2",
+			"label": "Tab two"
+		},
+		{
+			"type": "page",
+			"id": "page_tab_3",
+			"label": "Tab three"
+		}
+	],
+	"blocks": [
+		{
+			"name": "Banner",
+			"type": "banner",
+			"limit": 2,
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Image"
+				},
+				{
+					"type": "select",
+					"id": "height",
+					"label": "Banner height",
+					"options": [
+						{
+							"value": "one-hundred",
+							"label": "Full screen height"
+						},
+						{
+							"value": "original-height",
+							"label": "Image height"
+						},
+						{
+							"value": "big",
+							"label": "750px"
+						},
+						{
+							"value": "normal",
+							"label": "650px"
+						},
+						{
+							"value": "small",
+							"label": "550px"
+						}
+					],
+					"default": "normal"
+				},
+				{
+					"type": "text",
+					"id": "subheading",
+					"label": "Subheading"
+				},
+				{
+					"type": "text",
+					"id": "title",
+					"label": "Heading",
+					"default": "Welcome to Palo Alto"
+				},
+				{
+					"type": "textarea",
+					"id": "text",
+					"label": "Text",
+					"default": "A unique layout with a striking design"
+				},
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Text position",
+					"default": "center",
+					"options": [
+						{ "label": "Left", "value": "left" },
+						{ "label": "Center", "value": "center" },
+						{ "label": "Right", "value": "right" },
+						{ "label": "Bottom left", "value": "bottom-left" },
+						{ "label": "Bottom right", "value": "bottom-right" }
+					]
+				},
+				{
+					"type": "header",
+					"content": "Typography"
+				},
+				{
+					"type": "range",
+					"id": "heading_font_size",
+					"label": "Heading size",
+					"unit": "px",
+					"step": 4,
+					"min": 40,
+					"max": 64,
+					"default": 48
+				},
+				{
+					"type": "range",
+					"id": "text_font_size",
+					"label": "Text size",
+					"unit": "px",
+					"step": 2,
+					"min": 16,
+					"max": 28,
+					"default": 20
+				},
+				{
+					"type": "header",
+					"content": "Colors"
+				},
+				{
+					"type": "color",
+					"id": "color_text",
+					"label": "Text",
+					"default": "#ffffff"
+				},
+				{
+					"type": "color",
+					"id": "color_overlay",
+					"label": "Overlay",
+					"default": "#222222"
+				},
+				{
+					"type": "range",
+					"id": "overlay_opacity",
+					"label": "Overlay opacity",
+					"step": 1,
+					"max": 100,
+					"min": 0,
+					"unit": "%",
+					"default": 10
+				}
+			]
+		},
+		{
+			"name": "Product feature",
+			"type": "product-feature",
+			"limit": 2,
+			"settings": [
+				{
+					"type":"header",
+					"content":"Images"
+				},
+				{
+					"type": "select",
+					"id": "image_position",
+					"label": "Image position",
+					"info": "Affects the second image in this block.",
+					"default": "stacked",
+					"options": [
+						{ "label": "Overlapping", "value": "overlapping" },
+						{ "label": "Stacked", "value": "stacked" }
+					]
+				},
+				{
+					"type": "image_picker",
+					"id": "image_1",
+					"label": "Image"
+				},
+				{
+					"type": "url",
+					"id": "image_link_1",
+					"label": "Image link"
+				},
+				{
+					"type": "image_picker",
+					"id": "image_2",
+					"label": "Image"
+				},
+				{
+					"type": "url",
+					"id": "image_link_2",
+					"label": "Image link"
+				},
+				{
+					"type": "checkbox",
+					"id": "hide_image_2",
+					"label": "Hide on mobile",
+					"default": false
+				},
+				{
+					"type":"header",
+					"content":"Button"
+				},
+				{
+					"type": "text",
+					"id": "button_text",
+					"label": "Button text"
+				},
+				{
+					"type": "url",
+					"id": "button_link",
+					"label": "Button link"
+				},
+				{
+					"type":"header",
+					"content":"Text"
+				},
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Position",
+					"default": "normal",
+					"options": [
+						{ "label": "Normal", "value": "normal" },
+						{ "label": "Overlapping", "value": "overlapping" }
+					]
+				},
+				{
+					"type": "select",
+					"id": "text_alignment",
+					"label": "Alignment",
+					"default": "center",
+					"options": [
+						{ "label": "Center", "value": "center" },
+						{ "label": "Left", "value": "left" }
+					]
+				},
+				{
+					"type": "color",
+					"id": "line_color",
+					"label": "Line color",
+					"default": "#f3a293"
+				},
+				{
+					"type": "textarea",
+					"id": "heading",
+					"label": "Heading",
+					"default": "This is a heading for a Product feature block."
+				},
+				{
+					"type": "richtext",
+					"id": "description",
+					"label": "Description",
+					"default": "<p>Use this text to share information about the point put forth above. Describe a product, your brand, or what makes you special.</p>"
+				}
+			]
+		},
+		{
+			"name": "Rich text",
+			"type": "rich-text",
+			"settings": [
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Text position",
+					"default": "center",
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "center",
+							"label": "Center"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				{
+					"type": "text",
+					"id": "subheading",
+					"label": "Subheading",
+					"default": "Subheading"
+				},
+				{
+					"type": "text",
+					"id": "heading",
+					"label": "Heading",
+					"default": "Our Story"
+				},
+				{
+					"type": "richtext",
+					"id": "text",
+					"label": "Text",
+					"default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+				},
+				{
+					"type":"text",
+					"id":"button_text",
+					"label":"Button text",
+					"default":"Learn More"
+				},
+				{
+					"type":"url",
+					"id":"button_url",
+					"label":"Button link"
+				},
+				{
+					"type": "header",
+					"content": "Colors"
+				},
+				{
+					"type": "color",
+					"id": "color_text",
+					"label": "Text",
+					"default": "#333333"
+				},
+				{
+					"type": "color",
+					"id": "color_bg",
+					"label": "Background",
+					"default": "#ffffff"
+				}
+			]
+		},
+		{
+			"name": "Image with text",
+			"type": "image-with-text",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Image"
+				},
+				{
+					"type": "checkbox",
+					"id": "image_background",
+					"label": "Set image as a background",
+					"default": false
+				},
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Text position",
+					"default": "left",
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				{
+					"type": "text",
+					"id": "subheading",
+					"label": "Subheading",
+					"default": "Subheading"
+				},
+				{
+					"type": "text",
+					"id": "heading",
+					"label": "Heading",
+					"default": "Our Story"
+				},
+				{
+					"type": "richtext",
+					"id": "text",
+					"label": "Text",
+					"default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+				},
+				{
+					"type":"text",
+					"id":"button_text",
+					"label":"Button text",
+					"default":"Learn More"
+				},
+				{
+					"type":"url",
+					"id":"button_url",
+					"label":"Button link"
+				},
+				{
+					"type": "header",
+					"content": "Colors"
+				},
+				{
+					"type": "color",
+					"id": "color_text",
+					"label": "Text",
+					"default": "#333333"
+				},
+				{
+					"type": "color",
+					"id": "color_bg",
+					"label": "Background",
+					"default": "#ffffff"
+				}
+			]
+		}
+	]
+}
+{% endschema %} 

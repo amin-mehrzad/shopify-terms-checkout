@@ -1,0 +1,109 @@
+<!-- /sections/featured-collection.liquid -->
+
+{%- assign collection = collections[section.settings.featured_collection] | default: false -%}
+{%- assign products_columns = settings.product_grid_columns | plus: 0 -%}
+{%- assign products_rows = section.settings.products_rows | plus: 0 -%}
+{%- assign products_limit = products_columns | times: products_rows -%}
+{%- assign enable_reviews = settings.enable_reviews -%}
+{%- assign enable_swatches = settings.color_swatches -%}
+{%- assign product_grid_slideshow = settings.product_grid_slideshow -%}
+{%- assign bg_color = section.settings.bg_color | default: '#fff' -%}
+
+{%- assign layout = section.settings.products_layout -%}
+{%- assign enable_carousel = false -%}
+{%- if layout == 'carousel' -%}
+  {%- assign enable_carousel = true -%}
+  {%- assign product_grid_slideshow = false -%}
+{%- endif -%}
+
+{%- if collection == false -%}
+  {%- assign emptyState = true -%}
+  {%- assign collection_title = 'homepage.onboarding.collection_title' | t -%}
+{%- else -%}
+  {%- assign emptyState = false -%}
+  {%- assign collection_title = collection.title | escape -%}
+{%- endif -%}
+
+<div class="featured-collection-section text-center {% if emptyState %}empty-featured-collection{% endif %}" id="featured-collection" data-section-id="{{ section.id }}" data-section-type="featured-collection" data-reviews="{{ enable_reviews }}" data-swatches="{{ enable_swatches }}" data-slider="{{ enable_carousel }}" data-product-columns="{{ products_columns }}" data-product-grid-slideshow="{{ product_grid_slideshow }}" style="background: {{ bg_color }};">
+  {%- if section.settings.show_title and collection.handle != 'all' -%}
+    <h2 class="featured-collection__heading text-center">{{ collection_title }}</h2>
+    <hr>
+  {%- endif -%}
+  <div class="wrapper">
+    <div class="grid--full featured-collection {% if enable_carousel %}featured-collection--slider js-featured-collection--slider{% endif %}">
+      {%- if collection -%}
+
+        {% comment %} Check if there are any products in the collection {% endcomment %}
+        {%- if collection.products != empty -%}
+          {%- for product in collection.products limit: products_limit -%}
+            {%- include 'product-grid-item' -%}
+          {%- endfor -%}
+        {%- else -%}
+          <div class="grid__item text-center collection--no-results">
+            <p class="text-center">{{ 'collections.general.no_matches' | t }}</p>
+          </div>
+        {%- endif -%}
+        
+      {%- else -%}
+        {%- for i in (1..products_limit) -%}
+          {%- include 'product-grid-item--onboarding' -%}
+        {%- endfor -%}
+      {%- endif -%}
+
+      {%- if enable_carousel -%}
+        <div class="slider__arrow slider__arrow--previous">{%- include 'icon-arrow-right' -%}</div>
+        <div class="slider__arrow slider__arrow--next">{%- include 'icon-arrow-right' -%}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_rows",
+      "label": "Products rows",
+      "default":2,
+      "min": 1,
+      "max": 12,
+      "step": 1
+    },
+    { 
+      "type": "select",
+      "id": "products_layout",
+      "label": "Layout",
+      "info": "Product images carousel will be disabled if layout is set to Carousel.",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "carousel", "label": "Carousel" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show collection title"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

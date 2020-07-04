@@ -1,0 +1,60 @@
+<style>
+	.banner--{{ section_id }}::after { background-color: {{ color_overlay }}; opacity: {{ overlay_opacity }}; }
+	.banner--{{ section_id }} .collection-header { color: {{ color_text }} !important; }
+</style>
+
+<div class="banner-inner banner--{{ height }} banner--text-{{ text_position }} banner--{{ section_id }}">
+	
+	{% unless height == 'original-height' %}
+		{% if image != blank %}
+			<div class="banner-img lazyload" data-bgset="{% include 'bgset', image: image %}" data-sizes="auto" data-parent-fit="cover"></div>
+			<span class="loader"></span>
+			<noscript>
+				<div class="banner-img" style="background-image:url('{{ image | img_url: '1024x' }}'); background-size: cover; background-position: center center; background-repeat: no-repeat;"></div>
+			</noscript>
+		{% else %}
+			<div class="banner-img banner-img--placeholder">
+				{{ 'image' | placeholder_svg_tag: 'placeholder-svg-filled' }}
+			</div>
+		{% endif %}
+	{% else %}
+		{% if image != blank %}
+			{% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+			{% include 'theme-rias' %}
+				<img class="banner-img--original lazyload"
+					 data-src="{{ image_url_pattern }}" 
+					 data-widths="[{{ image_widths }}]"
+					 data-aspectratio="{{ image.aspect_ratio }}"
+					 data-sizes="auto"
+					 alt="{{ collection.title }}">
+				<span class="loader"></span>
+				<noscript>
+					<img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}" class="banner-img--original no-js-image">
+				</noscript>
+		{% else %}
+			<div class="banner-img--original banner-img--placeholder">
+				{{ 'image' | placeholder_svg_tag: 'placeholder-svg-filled' }}
+			</div>
+		{% endif %}
+	{% endunless %}
+
+	<div class="banner-content">
+		<header class="collection-header wrapper grid--full">
+			<div class="grid__item large--one-whole {% if show_banner == false and template == 'collection' %}text-center{% endif %}">
+				{% if subheading != blank %}
+					<div class="section-header__subheading collection-subheading">{{ subheading }}</div>
+				{% endif %}
+
+				{% unless heading == blank %}
+					<h1 class="section-header__title collection-title size--{{ heading_font_size }}">{{ heading }}</h1>
+				{% endunless %}
+
+				{% unless text == blank %}
+					<div class="rte rte--header collection-description size--{{ text_font_size }}">
+							{{ text }}
+					</div>
+				{% endunless %}
+			</div>
+		</header>
+	</div>
+</div> 

@@ -1,0 +1,156 @@
+<section data-section-type="list-collections" data-section-id="{{ section.id }}" id="ListCollections">
+  <div class = "wrapper">
+    {% if section.settings.title != blank %}
+      <div class="text-center list-collectons-title">
+        <h2>{{ section.settings.title | escape }}</h2>
+      </div>
+    {% endif %}
+
+    <div class="collection-grid">
+      <div class="js-list-collections__slider list-collections__slider" data-height="{{ section.settings.image_height }}" data-columns="{{ section.settings.columns }}" data-color-style="{{ section.settings.color_style }}" data-text-position="{{ section.settings.text_position }}">
+        {% for block in section.blocks limit: section.blocks.size %}
+          {%- assign collection = collections[block.settings.collection] -%}
+          <div {{ block.shopify_attributes }}>{% include 'collection-grid-item' %}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "class": "collection-list",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "range",
+        "id": "columns",
+        "label": "Visible collections",
+        "default": 4,
+        "min": 1,
+        "max": 4,
+        "step": 1
+      },
+      {
+        "type": "select",
+        "id": "image_height",
+        "label": "Image height",
+        "default": "400",
+        "options": [
+          {
+            "value": "300",
+            "label": "300px"
+          },
+          {
+            "value": "400",
+            "label": "400px"
+          },
+          {
+            "value": "500",
+            "label": "500px"
+          },
+          {
+            "value": "600",
+            "label": "600px"
+          },
+          {
+            "value": "700",
+            "label": "700px"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "text_position",
+        "label": "Text position",
+        "default": "bottom_left",
+        "options": [
+          {
+            "value": "bottom_left",
+            "label": "Bottom left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "color_style",
+        "label": "Color style",
+        "default": "white",
+        "options": [
+          {
+            "value": "white",
+            "label": "White"
+          },
+          {
+            "value": "black",
+            "label": "Black"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Overlay"
+      },
+      {
+        "type": "color",
+        "id": "overlay_color",
+        "label": "Color",
+        "default": "#000"
+      },
+      {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Opacity",
+        "min": 0,
+        "max": 95,
+        "step": 5,
+        "unit": "%",
+        "default": 20
+      }
+    ],
+    "blocks": [
+      {
+        "type": "featured_collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

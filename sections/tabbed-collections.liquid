@@ -1,0 +1,173 @@
+<!-- /sections/tabbed-collections.liquid -->
+{%- assign products_columns = settings.product_grid_columns | plus: 0 -%}
+{%- assign products_rows = section.settings.products_rows | plus: 0 -%}
+{%- assign products_limit = products_columns | times: products_rows -%}
+{%- assign enable_reviews = settings.enable_reviews -%}
+{%- assign enable_swatches = settings.color_swatches -%}
+{%- assign product_grid_slideshow = settings.product_grid_slideshow -%}
+{%- assign bg_color = section.settings.bg_color | default: '#fff' -%}
+
+{%- assign layout = section.settings.products_layout -%}
+{%- assign enable_carousel = false -%}
+{%- if layout == 'carousel' -%}
+  {%- assign enable_carousel = true -%}
+  {%- assign product_grid_slideshow = false -%}
+{%- endif -%}
+
+<div class="featured-collection-section" id="tabbed-collections" data-section-id="{{ section.id }}" data-section-type="tabbed-collections" data-reviews="{{ enable_reviews }}" data-swatches="{{ enable_swatches }}" data-slider="{{ enable_carousel }}" data-product-columns="{{ products_columns }}" data-product-grid-slideshow="{{ product_grid_slideshow }}" style="background: {{ bg_color }};">
+  {%- if section.settings.title -%}
+    <h2 class="featured-collection__heading text-center">{{ section.settings.title }}</h2>
+  {%- endif -%}
+  <div class="wrapper">
+    <div class="grid--full featured-collection">
+
+      <div class="collection__tabs">
+        <ul class="collection__tabs-nav">
+          {%- for block in section.blocks -%}
+            {%- assign collection = block.settings.featured_collection -%}
+            {%- assign featured_collection = collections[collection] -%}
+
+            {%- if collection != blank and featured_collection.title != blank -%}
+              {%- assign featured_collection_title = featured_collection.title -%}
+              {%- assign featured_collection_handle = collection -%}
+            {%- else -%}
+              {%- assign featured_collection_title = 'homepage.onboarding.collection_title' | t -%}
+              {%- assign featured_collection_handle = 'onboarding-' | append: forloop.index -%}
+            {%- endif -%}
+
+            <li {% if forloop.index == 1 %}class="is-active"{% endif %} {{ block.shopify_attributes }}>
+              <button data-tab="collection-{{ featured_collection_handle }}-{{ section.id }}">
+                {{- featured_collection_title -}}
+              </button>
+            </li>
+          {% endfor %}
+        </ul>
+
+        {%- for block in section.blocks -%}
+          {%- assign collection = block.settings.featured_collection -%}
+          {%- assign featured_collection = collections[collection] -%}
+          
+          {%- if collection != blank -%}
+            {%- assign featured_collection_handle = collection -%}
+          {%- else -%}
+            {%- assign featured_collection_handle = 'onboarding-' | append: forloop.index -%}
+          {%- endif -%}
+
+          <div class="collection__tab {% if forloop.index == 1 %}is-active{% endif %}" id="collection-{{ featured_collection_handle }}-{{ section.id }}">
+            <div class="collection__tab-content {% if featured_collection == empty %}collection__tab-contnet--onboarding{% endif %} {% if enable_carousel %}featured-collection--slider js-featured-collection--slider{% endif %}">
+              {%- if featured_collection != empty -%}
+
+                {% comment %} Check if there are any products in the collection selected {% endcomment %}
+                {%- if featured_collection.products != empty -%}
+
+                  {%- if enable_carousel -%}
+                    {%- for product in featured_collection.products -%}
+                      {%- include 'product-grid-item' -%}
+                    {%- endfor -%}
+                  {%- else -%}
+                    {%- for product in featured_collection.products limit: products_limit -%}
+                      {%- include 'product-grid-item' -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+
+                {%- else -%}
+                  <div class="grid__item text-center collection--no-results">
+                    <p class="text-center">{{ 'collections.general.no_matches' | t }}</p>
+                  </div>
+                {%- endif -%}
+
+              {%- else -%}
+                {%- if enable_carousel -%}
+                  {%- assign products_limit = products_columns | times: 3 -%}
+                {%- else -%}
+                  {%- assign products_limit = products_columns | times: products_rows -%}
+                {%- endif -%}
+                
+                {%- for i in (1..products_limit) -%}
+                  {%- include 'product-grid-item--onboarding' -%}
+                {%- endfor -%}
+              {%- endif -%}
+
+              {%- if enable_carousel -%}
+                <div class="slider__arrow slider__arrow--previous">{%- include 'icon-arrow-right' -%}</div>
+                <div class="slider__arrow slider__arrow--next">{%- include 'icon-arrow-right' -%}</div>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+          
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Tabbes collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured collections"
+    },
+    { 
+      "type": "select",
+      "id": "products_layout",
+      "label": "Layout",
+      "default": "grid",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "carousel", "label": "Carousel" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "products_rows",
+      "label": "Products rows",
+      "default":2,
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "info": "Affects Grid layout only."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fff"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Collection",
+      "type": "collection",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "collection",
+          "id": "featured_collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabbed collections",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

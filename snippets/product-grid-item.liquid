@@ -1,0 +1,193 @@
+<!-- /snippets/product-grid-item.liquid -->
+{%- include 'grid-logic' -%}
+
+{%- assign tag = false -%}
+{%- if product.available -%}
+  {%- assign sold_out = false -%}
+{%- else -%}
+  {%- assign sold_out = true -%}
+  {%- assign tag = true -%}
+{%- endif -%}
+
+{%- if product.compare_at_price_min > product.price_min -%}
+  {%- if sold_out -%}
+    {%- assign on_sale = false -%}
+  {%- else -%}
+    {%- assign on_sale = true -%}
+    {%- assign tag = true -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign on_sale = false -%}
+{%- endif -%}
+
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<div class="grid__item text-center {{ grid_item_width }} {% if tag == true %}has-tag{% endif %} {% if enable_carousel %}featured-collection__item{% endif %} product-item-parent" data-slideshow="{{ enable_slideshow }}" data-product-id="{{ product.id }}">
+  <!-- Image -->
+  <div class="grid__image">
+    {%- assign image = product.featured_image -%}
+    {%- assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' -%}
+    {% include 'theme-rias' %}
+    <a
+      href="{{ product.url }}"
+      class="lazyload product-image product-image--featured"
+      data-bgset="{% include 'bgset', image: image %}"
+      data-widths= "[{{ image_widths }}]"
+      data-aspectratio="{{image.aspect_ratio }}"
+      data-sizes="auto"
+      data-parent-fit="contain">
+    </a>
+    <span class="loader"></span>
+
+    <!-- Tags -->
+    {%- if on_sale -%}
+      <div class="tag tag--{{ settings.product_badge_style }}"><span>{{ 'products.product.on_sale_html' | t }}</span></div>
+    {%- endif -%}
+    {%- if sold_out -%}
+      <div class="tag tag--{{ settings.product_badge_style }}"><span>{{ 'products.product.sold_out_html' | t }}</span></div>
+    {%- endif -%}
+
+    {%- if product_grid_slideshow and product.images.size > 1 -%}
+      <div class="product-image__slider product-image__slider--mobile product-image__slider--arrows-{{ settings.product_grid_slideshow_arrows }}">
+        {%- for image in product.images -%}
+          <div class="product-image__slide">
+            <a
+              href="{{ product.url }}"
+              class="lazyload product-image"
+              data-bgset="{% include 'bgset', image: image %}"
+              data-widths= "[{{ image_widths }}]"
+              data-aspectratio="{{image.aspect_ratio }}"
+              data-sizes="auto"
+              data-parent-fit="contain">
+            </a>
+            <span class="loader"></span>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- if settings.product_grid_hover_image -%}
+        <div class="product-image__slider product-image__slider--desktop product-image__slider--arrows-{{ settings.product_grid_slideshow_arrows }}">
+          {%- for image in product.images -%}
+            {%- if image != product.featured_image -%}
+              <div class="product-image__slide">
+                <a
+                  href="{{ product.url }}"
+                  class="lazyload product-image"
+                  data-bgset="{% include 'bgset', image: image %}"
+                  data-widths= "[{{ image_widths }}]"
+                  data-aspectratio="{{image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="contain">
+                </a>
+                <span class="loader"></span>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="product-image__slider product-image__slider--no-hover product-image__slider--desktop product-image__slider--arrows-{{ settings.product_grid_slideshow_arrows }}">
+          {%- for image in product.images -%}
+            <div class="product-image__slide">
+              <a
+                href="{{ product.url }}"
+                class="lazyload product-image"
+                data-bgset="{% include 'bgset', image: image %}"
+                data-widths= "[{{ image_widths }}]"
+                data-aspectratio="{{image.aspect_ratio }}"
+                data-sizes="auto"
+                data-parent-fit="contain">
+              </a>
+              <span class="loader"></span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+        
+    {%- else -%}
+      {%- if product.images[1] != blank and settings.product_grid_hover_image -%}
+        <a class="product-image--hover" href="{{ product.url }}">
+          <span class="product-image--hover-img lazyload" data-bgset="{% include 'bgset', image: product.images[1] %}" data-sizes="auto"></span>
+          <span class="loader"></span>
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+          
+    <noscript>
+      <div class="product-image" style="background-image: url('{{ image | img_url: '600x' }}')"></div>
+
+      {%- if product.images[1] != blank and settings.product_grid_hover_image -%}
+        <a class="product-image--hover" href="{{ product.url }}">
+          <span class="product-image--hover-img" data-bgset="{% include 'bgset', image: product.images[1] %}" data-sizes="auto"></span>
+        </a>
+      {%- endif -%}
+    </noscript> 
+
+    {%- unless settings.quick_button == 'none' -%}
+      <div class="btn-wrapper">
+        {%- if settings.quick_button == 'view' -%}
+          <a href="{{ product.url | within: collection }}" class="btn btn--quick-view quick_view_button">{{ 'products.general.quick_view' | t }}</a>
+        {%- elsif settings.quick_button == 'buy' -%}
+          <a href="{{ product.url | within: collection }}" data-variant-id="{{ product.selected_or_first_available_variant.id }}" class="btn btn--add-to-cart add_to_cart_button">
+            <span>{{ 'products.general.add_to_cart' | t }}</span>
+            {%- include 'icon-loading' -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endunless -%}
+  </div>
+
+  <!-- Title -->
+  <a class = "product-grid-item__title" href="{{ product.url | within: collection }}">{{ product.title }}</a>
+  
+  {%- if enable_reviews or settings.enable_yotpo and settings.yotpo_ID != '' -%}
+    {%- if settings.enable_yotpo and settings.yotpo_ID != '' -%}
+      <div class="product__badge product__badge--yotpo">
+        <div class="yotpo bottomLine" data-product-id="{{ product.id }}"></div>
+      </div>
+    {%- elsif enable_reviews -%}
+      <div class="product__badge">
+        <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <a href="{{ product.url | within: collection }}">
+    <!-- Price -->
+    <p class="price">
+      {% if on_sale == true %}
+        {{ product.price | money }}
+        <span class="reduced-price"><s>{{ product.compare_at_price | money }}</s></span>
+      {% elsif product.price_varies %}
+        {{ product.price_min | money }} - {{ product.price_max | money }}
+      {% else %}
+        {{ product.price | money }}
+      {% endif %}
+
+      {%- if current_variant.unit_price_measurement -%}
+        <span class="unit-price">
+          {{ current_variant.unit_price | money }}
+          {%- if current_variant.unit_price_measurement.reference_value != 1 -%}
+              {{- current_variant.unit_price_measurement.reference_value -}}
+          {%- endif -%}
+          {{ current_variant.unit_price_measurement.reference_unit }}
+        </span>
+      {%- endif -%}
+    </p>
+  </a>
+
+  {%- if settings.show_product_grid_buttons -%}
+    <a class="btn" href="{{ product.url | within: collection }}">{{ 'products.product.view_item' | t }}</a>
+  {%- endif -%}
+
+  {%- if enable_swatches -%}
+    <div class="swatches-fake">
+      {%- include 'swatch' with 'Color' -%}
+    </div>
+  {%- endif -%}
+
+  {%- if settings.enable_yotpo and settings.yotpo_ID != '' -%}
+    <div class="yotpo--hidden">
+      {% include 'yotpo-reviews' %}
+    </div>
+  {%- endif -%}
+</div>

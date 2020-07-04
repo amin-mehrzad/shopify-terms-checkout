@@ -1,0 +1,146 @@
+<!-- /sections/testimonials.liquid -->
+
+{% comment %}
+Establishes the layout
+{% endcomment %}
+
+{% assign total_blocks = section.blocks.size %}
+
+{% if total_blocks == 1 %}
+  {% assign testimonial_width = 'grid__item push--large--one-quarter large--one-half medium-down--one-whole' %}
+{% elsif total_blocks == 2 %}
+  {% assign testimonial_width = 'grid__item large--one-half medium-down--one-whole' %}
+{% else %}
+  {% assign testimonial_width = 'grid__item largest--one-third large--one-half medium-down--one-whole' %}
+{% endif %}
+
+{% if section.settings.show_quotes %}
+{% assign quotes = 'has-quotes' %}
+{% endif %}
+
+<div data-section-id="{{ section.id }}" data-section-type="testimonials" class="testimonials-section {{quotes}}" id="testimonials">
+  {% if section.settings.title != blank %}
+  <div>
+    <h1 class="text-center testimonials-header">{{ section.settings.title | escape }}</h1>
+  </div>
+  {% endif %}
+  <div class="grid--full testimonials-wrapper testimonials__slider {% if section.blocks.size == 1 %}testimonials--single{% endif %}">
+
+      {% for block in section.blocks %}
+        {%- assign image = block.settings.image -%}
+        {%- assign customer_name = block.settings.customer_name -%}
+        {%- assign testimonial_text = block.settings.testimonial_text -%}
+
+        {%- unless image == blank and customer_name == blank and testimonial_text == blank -%}
+          <div class="testimonial__item {{ testimonial_width }}" {{ block.shopify_attributes }}>
+            <div class="testimonials-table">
+              <div class="testimonial-text text-center">{{ testimonial_text }}</div>
+
+              {% if image != blank or customer_name != blank %}
+                <div class="user-profile">
+                  <div class="testimonial-cell">
+                    {% if image != blank %}
+                    <div class="user-image">
+                      {%- assign image_widths = '50,100,125,250' -%}
+                      {% include 'theme-rias' %}
+                      <img
+                         class="lazyload"
+                         data-src="{{ image_url_pattern }}"
+                         data-widths= "[{{ image_widths }}]"
+                         data-aspectratio="{{image.aspect_ratio }}"
+                         data-sizes="auto"
+                         alt="{{ image.alt | escape }}">
+                      <span class="loader"></span>
+                      <noscript>
+                        <img src="{{ image | img_url: '125x' }}" alt="{{ image.alt | escape }}">
+                      </noscript>
+                    </div>
+                    {% endif %}
+                    
+                    {% if customer_name != blank %}
+                      <div class="user-name">{{ customer_name | escape }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+
+            </div>
+          </div>
+        {%- endunless -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+{% schema %}
+{
+  "name": "Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quotes",
+      "label": "Show quotation marks",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "testimonial_text",
+          "label": "Testimonial",
+          "default": "<p>Use this testimonial as an opportunity for your customers to discuss your brand and what sets you apart from the competition.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Customer photo"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer name",
+          "default": "John Doe"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "<p>Use this testimonial as an opportunity for your customers to discuss your brand and what sets you apart from the competition.</p>",
+            "customer_name":"Sherlock Holmes"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "<p>Use this testimonial as an opportunity for your customers to discuss your brand and what sets you apart from the competition.</p>",
+            "customer_name":"John Watson"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "testimonial_text": "<p>Use this testimonial as an opportunity for your customers to discuss your brand and what sets you apart from the competition.</p>",
+            "customer_name":"Mycroft Holmes"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

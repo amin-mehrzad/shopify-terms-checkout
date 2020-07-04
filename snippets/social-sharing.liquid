@@ -1,0 +1,40 @@
+{% if template contains 'article' or template contains 'blog' %}
+  {% capture permalinkURL %}{{ shop.url }}{{ article.url }}{% endcapture %}
+  {% capture shareTitle %}{{ article.title | url_param_escape }}{% endcapture %}
+
+{% elsif template contains 'product' %}
+  {% capture permalinkURL %}{{ shop.url }}{{ product.url }}{% endcapture %}
+  {% capture shareTitle %}{{ product.title | url_param_escape }}{% endcapture %}
+  
+{% elsif template contains 'index'  %}
+  {% capture permalinkURL %}{{ shop.url }}{{ product.url }}{% endcapture %}
+  {% capture shareTitle %}{{ product.title | url_param_escape }}{% endcapture %}
+
+{% elsif template == 'password' %}
+  {% capture permalinkURL %}{{ shop.url }}{% endcapture %}
+  {% capture shareTitle %}{% unless shop.description == blank %}{{ shop.description | url_param_escape }}{% else %}{{ shop.name | url_param_escape }}{% endunless %}{% endcapture %}
+
+{% endif %}
+
+
+<div data-permalink="{{ permalinkURL }}">
+
+  {% if settings.share_facebook != blank %}
+    <a target="_blank" class = "social-circle facebook" href = "//www.facebook.com/sharer.php?u={{ permalinkURL }}" title="{{ shop.name }}">
+      <i class = "custom-icon-facebook"></i>
+    </a>
+  {% endif %}
+
+  {% if settings.share_twitter != blank %}
+     <a target="_blank" class = "social-circle twitter" href = "//twitter.com/share?text={{ product.title}}&amp;url={{ permalinkURL }}{% unless template == 'password' %}&amp;media={% if template == 'product' or template == 'index'%}{{ product.featured_image.src | product_img_url: '1024x1024' }}{% endif %}{% if template == 'article' %}{{ article | img_url: '1024x1024' }}{% endif %}{% endunless %}" title="{{ shop.name }}">
+      <i class = "custom-icon-twitter"></i>
+    </a>
+  {% endif %}
+
+  {% if settings.share_pinterest != blank %}
+     <a target="_blank" class = "social-circle pinterest" href = "{% if template contains 'password' %}{{ settings.social_pinterest_link }}{% else %}//pinterest.com/pin/create/button/?url={{ permalinkURL }}&amp;media=http:{% if template == 'product' or template == 'index' %}{{ product | img_url: '1024x1024' }}{% endif %}{% if template == 'article' %}{{ article | img_url: '1024x1024' }}{% endif %}{% endif %}&amp;description={{ shareTitle }}">
+      <i class = "custom-icon-pinterest"></i>
+    </a>
+  {% endif %}
+ 
+</div>

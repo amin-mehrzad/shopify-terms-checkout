@@ -1,0 +1,149 @@
+{% comment %} Product Features {% endcomment %}
+
+<div data-section-id="{{ section.id }}" data-section-type="product-features">
+  <div class="wrapper">
+    <div class="product-features__wrapper">
+      {% for block in section.blocks %}
+        {%- assign row = forloop.index | modulo: 2 -%}
+        {%- assign heading = block.settings.heading -%}
+        {%- assign description = block.settings.description -%}
+        {%- assign button_text = block.settings.button_text -%}
+        {%- assign button_link = block.settings.button_link -%}
+        {%- assign image_1 = block.settings.image_1 -%}
+        {%- assign image_2 = block.settings.image_2 -%}
+        {%- assign image_link_1 = block.settings.image_link_1 -%}
+        {%- assign image_link_2 = block.settings.image_link_2 -%}
+        {%- assign hide_image_2 = block.settings.hide_image_2 -%}
+
+        {% include 'product-feature' %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product features",
+  "max_blocks": 2,
+  "class": "product-features",
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Product feature",
+      "settings": [
+        {
+          "type":"header",
+          "content":"Images"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "info": "Affects the second image in this block.",
+          "default": "stacked",
+          "options": [
+            { "label": "Overlapping", "value": "overlapping" },
+            { "label": "Stacked", "value": "stacked" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "image_link_1",
+          "label": "Image link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "image_link_2",
+          "label": "Image link"
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_image_2",
+          "label": "Hide on mobile",
+          "default": false
+        },
+        {
+          "type":"header",
+          "content":"Button"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type":"header",
+          "content":"Text"
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Position",
+          "default": "normal",
+          "options": [
+            { "label": "Normal", "value": "normal" },
+            { "label": "Overlapping", "value": "overlapping" }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Alignment",
+          "default": "center",
+          "options": [
+            { "label": "Center", "value": "center" },
+            { "label": "Left", "value": "left" }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "line_color",
+          "label": "Line color",
+          "default": "#f3a293"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "This is a heading for a Product feature block."
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Use this text to share information about the point put forth above. Describe a product, your brand, or what makes you special.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product features",
+      "category": "Product",
+      "blocks": [
+        {
+          "type": "text"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

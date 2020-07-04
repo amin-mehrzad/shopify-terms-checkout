@@ -1,0 +1,122 @@
+{% comment %} Logos List {% endcomment %}
+
+{% assign heading = section.settings.title %}
+{% assign blocks_count = section.blocks.size %}
+<div data-section-id="{{ section.id }}" data-section-type="press">
+  <div class="wrapper">
+    {% unless heading == blank %}
+      <h4 class="press__heading">{{ heading }}</h4>
+    {% endunless %}
+
+    {% if blocks_count > 0 %}
+      <div class="press__items" data-count="{{ blocks_count }}">
+        {% for block in section.blocks %}
+          {% assign text = block.settings.text %}
+          {% assign image = block.settings.press_logo %}
+          {% assign link = block.settings.link %}
+          <div class="press__item" {{ block.shopify_attributes }}>
+            {% unless text == blank %}
+              {% if link != blank %}
+                <a href="{{ link }}">{{ text }}</a>
+              {% else %}
+                {{ text }}
+              {% endif %}
+            {% endunless %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="press__logos press__logos--{{ blocks_count }}">
+        <div class="press__logos-slider">
+          {% for block in section.blocks %}
+            {% assign image = block.settings.press_logo %}
+            <div class="press__logo {% if forloop.index == 1 %}is-selected{% endif %}">
+              <div class="press__logo-image">
+                {% unless image == blank %}
+                  {% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+                  {% include 'theme-rias' %}
+                  <img class="lazyload"
+                    data-src="{{ image_url_pattern }}"
+                    data-widths="[{{ image_widths }}]"
+                    data-aspectratio="{{ image.aspect_ratio }}"
+                    data-sizes="auto"
+                    alt="{{ image.alt }}">
+                    <span class="loader"></span>
+
+                    <noscript>
+                      <img src="{{ image | img_url: '1024x' }}" alt="{{ image.alt }}">
+                    </noscript>
+                {% else %}
+                  {%- capture counter -%}{%- cycle 1, 2, 3, 4, 5, 6 -%}{%- endcapture -%}
+                  {{ 'product-' | append: counter | placeholder_svg_tag: 'placeholder-svg-filled' }}
+                {% endunless %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if blocks_count > 2 %}
+          <div class="slider__arrow slider__arrow--previous"><span class="custom-icon-arrow-right" aria-hidden="true"></span></div>
+          <div class="slider__arrow slider__arrow--next"><span class="custom-icon-arrow-right" aria-hidden="true"></span></div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Press",
+  "class": "press-section",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Press"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Press",
+      "type": "press",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Provide some information about the what the company below thinks about your brand.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "press_logo",
+          "label": "Press logo"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Press",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "press"
+        },
+        {
+          "type": "press"
+        },
+        {
+          "type": "press"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

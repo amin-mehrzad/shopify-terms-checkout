@@ -1,0 +1,89 @@
+<!-- Rich text -->
+
+{% capture content %}
+  {% if subheading != blank %}
+    <div class="rich-text__subheading">{{subheading}}</div>
+  {% endif %}
+  {% if heading != blank %}
+    <h3 class="rich-text__heading">{{heading}}</h3>
+  {% endif %}
+  {% if text != blank %}
+    <div class="rich-text__text">{{ text }}</div>
+  {% endif %}
+  {% if button_text != blank %}
+    <a class="btn" href="{{ button_url }}">{{button_text}}</a>
+  {% endif %}
+{% endcapture %}
+
+<div class="rich-text--{{ section_id }} {% if image_background %}rich-text--has-background{% endif %}">
+  {% if show_image %}
+    <style>
+      .rich-text--{{ section_id }} .rich-text__content { color: {{ color_text }}; background: {{ color_bg }}; }
+    </style>
+
+    {% if image_background %}
+      <div class="rich-text__background">
+        {% unless image == blank %}
+          <div class="rich-text__background-image lazyload"
+            data-bgset="{% include 'bgset', image: image %}"
+            data-parent-fit="cover"
+            data-sizes="auto">
+          </div>
+          <span class="loader"></span>
+          <noscript>
+            <div class="rich-text__background-image no-js-image" style="background-image: url({{ image | img_url: '2048x' }});"></div>
+          </noscript>
+        {% else %}
+          <div class="rich-text__background-image svg-placeholder">
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg-filled' }}
+          </div>
+        {% endunless %}
+      </div>
+      
+    {% endif %}
+
+    <div class="wrapper">
+      <div class="grid--full">
+        <div class="grid__item">
+          <div class="rich-text__wrapper {% if text_position == 'right' %}rich-text__wrapper--reversed{% endif %}">
+            {% unless image_background %}
+              <div class="rich-text__image">
+                {% unless image == blank %}
+                  <div class="rich-text__image-bg lazyload"
+                      data-bgset="{% include 'bgset', image: image %}"
+                      data-aspectratio="{{ image.aspect_ratio }}"
+                      data-sizes="auto">
+                  </div>
+                  <span class="loader"></span>
+                  <noscript>
+                    <div class="rich-text__image-bg no-js-image" style="background-image: url({{ image | img_url: '2048x' }});"></div>
+                  </noscript>
+                {% else %}
+                  <div class="rich-text__image-bg rich-text__image-bg--placeholder">
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {% endunless %}
+              </div>
+            {% endunless %}
+
+            <div class="rich-text__content">
+              {{ content }}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <style>
+      .rich-text--{{ section_id }} .rich-text { color: {{ color_text }}; background: {{ color_bg }}; }
+    </style>
+    <div class="rich-text rich-text--no-image">
+      <div class="grid--full wrapper text-{{ text_position }}">
+        <div class="grid__item large--three-quarters push--large--one-eighth medium-down--one-whole">
+            {{ content }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

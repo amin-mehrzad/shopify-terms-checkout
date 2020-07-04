@@ -1,0 +1,108 @@
+{% comment %} Logos List {% endcomment %}
+{%- if section.blocks.size > 0 -%}
+<div data-section-id="{{ section.id }}" data-section-type="logo-list">
+  <div class="logo-list" style="background-color: {{ section.settings.color_bg }};">
+    <div class="logo-list__wrapper">
+      <div class="logo-list__slider">
+        {%- for block in section.blocks -%}
+          {%- assign image = block.settings.image -%}
+          {%- assign url = block.settings.url -%}
+          {%- assign logos_width = block.settings.logos_width -%}
+
+          {%- if image != blank -%}
+            <div class="logo-list__slide" {{ block.shopify_attributes }}>
+              <a href="{{ url }}"
+                class="logo-list__slide-image lazyload"
+                data-bgset="{% include 'bgset', image: image %}"
+                data-sizes="auto"
+                data-parent-fit="cover"
+                data-aspectratio="{{ image.aspect_ratio }}"
+                style="width: {{ logos_width | append: 'px' }};"
+                ></a>
+              <span class="loader"></span>
+              <noscript>
+                <a href="{{ url }}" class="logo-list__slide-image" style="background-image: url({{ image | img_url: '180x' }}); width: {{ logos_width | append: 'px' }};">
+                </a>
+              </noscript>
+            </div>
+          {%- else -%}
+            <div class="logo-list__slide" {{ block.shopify_attributes }}>
+              <a href="#!" class="logo-list__slide-image svg-placeholder" style="width: {{ logos_width | append: 'px' }};">
+                {%- capture current -%}{%- cycle 1, 2, 3, 4, 5, 6 -%}{%- endcapture -%}
+                {{ 'collection-' | append: current | placeholder_svg_tag }}
+              </a>
+            </div>
+          {%- endif -%}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Logo list",
+  "max_blocks": 25,
+  "class": "logo-list",
+  "settings": [
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Background",
+      "default": "#fafafa"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item_logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "logos_width",
+          "label": "Logos width",
+          "min": 100,
+          "max": 180,
+          "step": 10,
+          "unit": "px",
+          "default": 120
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo list",
+      "category": "Image",
+      "blocks": [
+        {
+          "type": "item_logo"
+        },
+        {
+          "type": "item_logo"
+        },
+        {
+          "type": "item_logo"
+        },
+        {
+          "type": "item_logo"
+        },
+        {
+          "type": "item_logo"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

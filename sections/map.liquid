@@ -1,0 +1,161 @@
+{% comment %} Section {% endcomment %}
+{%- assign section_id = section.id -%}
+{%- assign api_key = section.settings.api_key -%}
+{%- assign map_address = section.settings.map_address -%}
+{%- assign map_height = section.settings.map_height -%}
+{%- assign location_title = section.settings.location_title -%}
+{%- assign location_title_size = section.settings.location_title_size -%}
+{%- assign address = section.settings.address -%}
+{%- assign card_color = section.settings.card_color -%}
+{%- assign style = section.settings.style -%}
+{%- assign zoom = section.settings.zoom -%}
+{%- assign background_image = section.settings.background_image -%}
+
+{% include 'map' %}
+
+{% comment %} Schema {% endcomment %}
+{% schema %}
+  {
+    "name": "Map",
+    "class": "map-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "api_key",
+        "label": "Google Maps API key",
+        "info": "You’ll need to [register a Google Maps API Key](https://help.shopify.com/manual/using-themes/troubleshooting/map-section-api-key) to display the map"
+      },
+      {
+        "type": "richtext",
+        "id": "map_address",
+        "label": "Map address",
+        "info": "Google Maps will find the exact location",
+        "default": "<p>566 Emerson St, Palo Alto, CA 94301</p>"
+      },
+      {
+        "type": "text",
+        "id": "location_title",
+        "label": "Heading",
+        "default": "Palo Alto"
+      },
+      {
+      "type": "select",
+      "id": "location_title_size",
+      "label": "Heading size",
+      "default": "h2",
+      "options": [
+        {
+          "value": "h1",
+          "label": "Large"
+        },
+        {
+          "value": "h2",
+          "label": "Medium"
+        },
+        {
+          "value": "h4",
+          "label": "Small"
+        }
+        ]
+      },
+      {
+        "type": "richtext",
+        "id": "address",
+        "label": "Address and hours",
+        "default": "<p>566 Emerson Street<br>Palo Alto, California</p><p>Mon - Fri, 8am - 11pm<br>Saturday, 8am - 12pm<br>Sunday, 9am - 11pm</p>"
+      },
+      {
+        "type": "color",
+        "id": "card_color",
+        "label": "Card color",
+        "default": "#fff"
+      },
+      {
+        "type": "select",
+        "id": "map_height",
+        "label": "Map height",
+        "default": "five-fifty-height-hero",
+        "options": [
+          {
+            "value": "one-hundred-height-hero",
+            "label": "Full screen height"
+          },
+          {
+            "value": "original-height",
+            "label": "Image height"
+          },
+          {
+            "value": "seven-fifty-height-hero",
+            "label": "750px"
+          },
+          {
+            "value": "sixty-fifty-height-hero",
+            "label": "650px"
+          },
+          {
+            "value": "five-fifty-height-hero",
+            "label": "550px"
+          },
+          {
+            "value": "four-fifty-height-hero",
+            "label": "450px"
+          }
+        ]
+      },
+      {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "default": "standard",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "silver",
+          "label": "Silver"
+        },
+        {
+          "value": "retro",
+          "label": "Retro"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "night",
+          "label": "Night"
+        },
+        {
+          "value": "aubergine",
+          "label": "Aubergine"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "zoom",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "label": "Zoom",
+      "info": "Low levels cover a wide area, while higher levels cover a smaller area.",
+      "default": 12
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Image",
+      "info": "Displayed if the map isn’t loaded"
+    }
+    ],
+    "presets": [
+      {
+        "name": "Map",
+        "category": "Store information"
+      }
+    ]
+  }
+{% endschema %}

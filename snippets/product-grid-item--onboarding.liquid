@@ -1,0 +1,98 @@
+{%- include 'grid-logic' -%}
+
+<div class="grid__item text-center product-item-parent {{ grid_item_width }} {% if enable_carousel %}featured-collection__item featured-collection__item--onboarding{% endif %}" data-slideshow="{{ enable_slideshow }}">
+  <div class="featured-collection__item-image">
+    <div class="grid__image">
+      {% capture index %}{% cycle 1,2,3,4,5,6 %}{% endcapture %}
+      {% capture index_hover %}{% cycle 5,6,1,2,3,4 %}{% endcapture %}
+      <div class="product-image product-image--featured">
+        {{ 'product-' | append: index | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+
+      {%- if product_grid_slideshow -%}
+        <div class="product-image__slider product-image__slider--mobile product-image__slider--arrows-{{ product_grid_slideshow_arrows }}">
+          {%- for j in (1..3) -%}
+            <div class="product-image__slide">
+              <div class="product-image">
+                {{ 'product-' | append: index_hover | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="product-image__slider product-image__slider--desktop product-image__slider--arrows-{{ product_grid_slideshow_arrows }}">
+          {%- for j in (1..3) -%}
+            <div class="product-image__slide">
+              <div class="product-image">
+                {{ 'product-' | append: index_hover | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        {%- if settings.product_grid_hover_image -%}
+          <div class="product-image--hover">
+            {{ 'product-' | append: index_hover | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- unless settings.quick_button == 'none' -%}
+        <div class="btn-wrapper">
+          {%- if settings.quick_button == 'view' -%}
+            <span class="btn btn--quick-view">{{ 'products.general.quick_view' | t }}</span>
+          {%- elsif settings.quick_button == 'buy' -%}
+            <span class="btn btn--add-to-cart">{{ 'products.general.add_to_cart' | t }}</span>
+          {%- endif -%}
+        </div>
+      {%- endunless -%}
+    </div>
+  </div>
+  
+  <!-- Title -->
+  <h3><a href="#!">{{ 'homepage.onboarding.product_title' | t }}</a></h3>
+
+  {% if enable_reviews %}
+    <span class="shopify-product-reviews-badge"">
+      <span class="spr-badge" data-rating="0.0">
+        <span class="spr-starrating spr-badge-starrating">
+          <i class="spr-icon spr-icon-star-empty"></i>
+          <i class="spr-icon spr-icon-star-empty"></i>
+          <i class="spr-icon spr-icon-star-empty"></i>
+          <i class="spr-icon spr-icon-star-empty"></i>
+          <i class="spr-icon spr-icon-star-empty"></i>
+        </span>
+      </span>
+    </span>
+  {% endif %}
+  
+  <!-- Price -->
+  <p class = "price">{{ 1999 | money }}</p>
+
+  <!-- Button -->
+  {% if settings.show_product_grid_buttons %}
+    <a class = "btn" href="#!">{{ 'products.product.view_item' | t }}</a>
+  {% endif %}
+
+  {% if enable_swatches %}
+    <div class="swatches-fake">
+      <div class="swatch clearfix" data-option-index="0">
+        <div data-value="White" class="swatch-element color white">
+          <label title="White">
+            <span style="background-color: white;"></span>
+          </label>
+        </div>
+        <div data-value="Grey" class="swatch-element color grey">
+          <label title="Grey">
+            <span style="background-color: grey;"></span>
+          </label>
+        </div>
+        <div data-value="Black" class="swatch-element color black">
+          <label title="Black">
+            <span style="background-color: black;"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

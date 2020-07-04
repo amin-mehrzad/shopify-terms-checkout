@@ -1,0 +1,345 @@
+<!-- /sections/contact-page.liquid -->
+
+<div class="grid--full extra-header-padding wrapper">
+  <div class="grid__item push--large--one-quarter large--one-half medium-down--one-whole">
+    <h1 class = "page-title text-center">{{ page.title }}</h1>
+    {% comment %}
+      Regular page content goes here.
+    {% endcomment %}
+    <div class="rte">
+      {{ page.content }}
+    </div>
+
+    {% comment %}
+      Contact form starts here
+    {% endcomment %}
+    <div class="form-vertical">
+      {% form 'contact' %}
+
+        {% comment %}
+          Successful message
+        {% endcomment %}
+        {% if form.posted_successfully? %}
+          <p class="note form-success">
+            {{ 'contact.form.post_success' | t }}
+          </p>
+        {% endif %}
+
+        {{ form.errors | default_errors }}
+
+        {% assign name_attr = 'contact.form.name' | t | handle %}
+        <label for="ContactFormName" class="hidden-label">{{ 'contact.form.name' | t }}</label>
+        <input type="text" id="ContactFormName" class="input-full" name="contact[{{ name_attr }}]" placeholder="{{ 'contact.form.name' | t }}" autocapitalize="words" value="{% if form[name_attr] %}{{ form[name_attr] }}{% elsif customer %}{{ customer.name }}{% endif %}">
+
+        <label for="ContactFormEmail" class="hidden-label">{{ 'contact.form.email' | t }}</label>
+        <input type="email" id="ContactFormEmail" class="input-full" name="contact[email]" placeholder="{{ 'contact.form.email' | t }}" autocorrect="off" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+
+        {% assign name_attr = 'contact.form.phone' | t | handle %}
+        <label for="ContactFormPhone" class="hidden-label">{{ 'contact.form.phone' | t }}</label>
+        <input type="tel" id="ContactFormPhone" class="input-full" name="contact[{{ name_attr }}]" placeholder="{{ 'contact.form.phone' | t }}" pattern="[0-9\-]*" value="{% if form[name_attr] %}{{ form[name_attr] }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+
+        <label for="ContactFormMessage" class="hidden-label">{{ 'contact.form.message' | t }}</label>
+        <textarea rows="10" id="ContactFormMessage" class="input-full" name="contact[body]" placeholder="{{ 'contact.form.message' | t }}">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+
+        <input type="submit" class="btn" value="{{ 'contact.form.send' | t }}">
+
+      {% endform %}
+    </div>
+  </div>
+</div>
+
+{% include 'block-sections' %}
+
+{% schema %}
+{
+	"name": "Contact page",
+	"blocks": [
+		{
+			"name": "Map",
+			"type": "map",
+			"settings": [
+				{
+					"type": "text",
+					"id": "api_key",
+					"label": "Google Maps API key",
+					"info": "You’ll need to [register a Google Maps API Key](https://help.shopify.com/manual/using-themes/troubleshooting/map-section-api-key) to display the map"
+				},
+				{
+					"type": "richtext",
+					"id": "map_address",
+					"label": "Map address",
+					"info": "Google Maps will find the exact location",
+					"default": "<p>566 Emerson St, Palo Alto, CA 94301</p>"
+				},
+				{
+					"type": "text",
+					"id": "location_title",
+					"label": "Heading",
+					"default": "Palo Alto"
+				},
+				{
+					"type": "select",
+					"id": "location_title_size",
+					"label": "Heading size",
+					"default": "h2",
+					"options": [
+						{
+						  "value": "h1",
+						  "label": "Large"
+						},
+						{
+						  "value": "h2",
+						  "label": "Medium"
+						},
+						{
+						  "value": "h4",
+						  "label": "Small"
+						}
+					]
+				},
+				{
+					"type": "richtext",
+					"id": "address",
+					"label": "Address and hours",
+					"default": "<p>566 Emerson Street<br>Palo Alto, California</p><p>Mon - Fri, 8am - 11pm<br>Saturday, 8am - 12pm<br>Sunday, 9am - 11pm</p>"
+				},
+				{
+					"type": "color",
+					"id": "card_color",
+					"label": "Card color",
+					"default": "#fff"
+				},
+				{
+					"type": "select",
+					"id": "map_height",
+					"label": "Map height",
+					"default": "one-hundred-height-hero",
+					"options": [
+						{
+							"value": "one-hundred-height-hero",
+							"label": "Full screen height"
+						},
+						{
+							"value": "original-height",
+							"label": "Image height"
+						},
+						{
+							"value": "seven-fifty-height-hero",
+							"label": "750px"
+						},
+						{
+							"value": "sixty-fifty-height-hero",
+							"label": "650px"
+						},
+						{
+							"value": "five-fifty-height-hero ",
+							"label": "550px"
+						},
+						{
+							"value": "four-fifty-height-hero",
+							"label": "450px"
+						}
+					]
+				},
+				{
+					"type": "select",
+					"id": "style",
+					"label": "Style",
+					"default": "standard",
+					"options": [
+						{
+							"value": "standard",
+							"label": "Standard"
+						},
+						{
+							"value": "silver",
+							"label": "Silver"
+						},
+						{
+							"value": "retro",
+							"label": "Retro"
+						},
+						{
+							"value": "dark",
+							"label": "Dark"
+						},
+						{
+							"value": "night",
+							"label": "Night"
+						},
+						{
+							"value": "aubergine",
+							"label": "Aubergine"
+						}
+					]
+				},
+				{
+					"type": "range",
+					"id": "zoom",
+					"min": 1,
+					"max": 20,
+					"step": 1,
+					"label": "Zoom",
+					"info": "Low levels cover a wide area, while higher levels cover a smaller area.",
+					"default": 12
+				},
+				{
+					"type": "image_picker",
+					"id": "background_image",
+					"label": "Image",
+					"info": "Displayed if the map isn’t loaded"
+				}
+			]
+		},
+		{
+			"name": "Rich text",
+			"type": "rich-text",
+			"settings": [
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Text position",
+					"default": "center",
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "center",
+							"label": "Center"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				{
+					"type": "text",
+					"id": "subheading",
+					"label": "Subheading",
+					"default": "Subheading"
+				},
+				{
+					"type": "text",
+					"id": "heading",
+					"label": "Heading",
+					"default": "Our Story"
+				},
+				{
+					"type": "richtext",
+					"id": "text",
+					"label": "Text",
+					"default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+				},
+				{
+					"type": "text",
+					"id": "button_text",
+					"label": "Button text",
+					"default": "Learn More"
+				},
+				{
+					"type": "url",
+					"id": "button_url",
+					"label": "Button link"
+				},
+				{
+					"type": "header",
+					"content": "Colors"
+				},
+				{
+					"type": "color",
+					"id": "color_text",
+					"label": "Text",
+					"default": "#333333"
+				},
+				{
+					"type": "color",
+					"id": "color_bg",
+					"label": "Background",
+					"default": "#ffffff"
+				}
+			]
+		},
+		{
+			"name": "Image with text",
+			"type": "image-with-text",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Image"
+				},
+				{
+					"type": "checkbox",
+					"id": "image_background",
+					"label": "Set image as a background",
+					"default": false
+				},
+				{
+					"type": "select",
+					"id": "text_position",
+					"label": "Text position",
+					"default": "left",
+					"options": [
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
+				{
+					"type": "text",
+					"id": "subheading",
+					"label": "Subheading",
+					"default": "Subheading"
+				},
+				{
+					"type": "text",
+					"id": "heading",
+					"label": "Heading",
+					"default": "Our Story"
+				},
+				{
+					"type": "richtext",
+					"id": "text",
+					"label": "Text",
+					"default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+				},
+				{
+					"type": "text",
+					"id": "button_text",
+					"label": "Button text",
+					"default": "Learn More"
+				},
+				{
+					"type": "url",
+					"id": "button_url",
+					"label": "Button link"
+				},
+				{
+					"type": "header",
+					"content": "Colors"
+				},
+				{
+					"type": "color",
+					"id": "color_text",
+					"label": "Text",
+					"default": "#333333"
+				},
+				{
+					"type": "color",
+					"id": "color_bg",
+					"label": "Background",
+					"default": "#ffffff"
+				}
+			]
+		}
+	]
+}
+{% endschema %} 

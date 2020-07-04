@@ -1,0 +1,67 @@
+{%- unless image_1 == blank and image_2 == blank and heading == blank and description == blank and button_text == blank -%}
+
+<style>#product-feature-{{ block.id }} .product-feature__text hr { background: {{ block.settings.line_color }}; }</style>
+
+<div class="product-feature product-feature--{% if row == 1 %}odd{% else %}even{% endif %} {% if image_2 == blank %}product-feature--stacked{% else %} product-feature--{{ block.settings.image_position }}{% endif %} product-feature--text-{{ block.settings.text_alignment }}" id="product-feature-{{ block.id }}" {{ block.shopify_attributes }}>
+  <div class="product-feature__images {% if hide_image_2 or image_2 == blank %}product-feature__images--mobile-single{% endif %}">
+    <div class="product-feature__image product-feature__image--primary">
+      {%- if image_link_1 != blank -%}<a href="{{ image_link_1 }}">{%- endif -%}
+      {%- if image_1 != blank -%}
+        {%- assign image = image_1 -%}
+        {%- assign image_widths = '295,394,590,700,800,1000,1024,1500,1800,2000,2400' -%}
+        {% include 'theme-rias' %}
+        <img 
+           class="lazyload"
+           data-src="{{ image_url_pattern }}"
+           data-widths= "[{{ image_widths }}]"
+           data-aspectratio="{{ image.aspect_ratio }}"
+           data-sizes="auto"
+           alt="{{ image.alt | escape }}">
+        <span class="loader"></span>
+        <noscript>
+          <img src="{{ image | img_url: '1024x' }}" alt="{{ image.alt | escape }}">
+        </noscript>
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'placeholder-svg-filled' }}
+      {%- endif -%}
+      {%- if image_link_1 != blank -%}</a>{%- endif -%}
+    </div>
+
+    {%- if image_2 != blank -%}
+      <div class="product-feature__image product-feature__image--secondary">
+        {%- if image_link_2 != blank -%}<a href="{{ image_link_2 }}">{%- endif -%}
+          {%- assign image = image_2 -%}
+          {%- assign image_widths = '295,394,590,700,800,1000,1024,1500,1800,2000,2400' -%}
+          {% include 'theme-rias' %}
+          <img 
+             class="lazyload"
+             data-src="{{ image_url_pattern }}"
+             data-widths= "[{{ image_widths }}]"
+             data-aspectratio="{{image.aspect_ratio }}"
+             data-sizes="auto"
+             alt="{{ image.alt | escape }}">
+          <span class="loader"></span>
+          <noscript>
+            <img src="{{ image | img_url: '1024x' }}" alt="{{ image.alt | escape }}">
+          </noscript>
+        {%- if image_link_2 != blank -%}</a>{%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="product-feature__text product-feature__text--{{ block.settings.text_position }}">
+    {%- if heading != blank -%}
+      <h1>{{ heading | escape }}</h1>
+    {%- endif -%}
+    <hr>
+    {%- if description != blank -%}
+      {{ description }}
+    {%- endif -%}
+    
+    {%- if button_text != blank -%}
+      <a href="{{ button_link }}" class="btn">{{ button_text }}</a>
+    {%- endif -%}
+  </div>
+
+</div>
+{%- endunless -%}

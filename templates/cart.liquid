@@ -1,0 +1,143 @@
+ <!-- /sections/cart.liquid -->
+
+<div class = "grid--full wrapper">
+  <div class = "grid__item widescreen--three-quarters push--widescreen--one-eighth">
+    {% if cart.item_count > 0 %}
+      <h1 class = "cart-title">{{ 'cart.general.title' | t }}</h1>
+      <form action="/cart" method="post" novalidate class="cart table-wrap" id="AddToCartForm">
+        <table class="cart-table full table--responsive">
+          <thead class="cart__header-labels">
+            <th colspan="1"></th>
+            <th colspan="2" class="text-left">{{ 'cart.label.product' | t }}</th>
+            <th colspan="1" class="text-center">{{ 'cart.label.price' | t }}</th>
+            <th class="text-center">{{ 'cart.label.quantity' | t }}</th>
+            <th class="text-right">{{ 'cart.label.total' | t }}</th>
+          </thead>
+          <tbody class="cart__items">
+            {% for item in cart.items %}
+              <tr class="cart__row table__section" data-variant-id="{{ item.variant_id }}">
+                <td>
+                  <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="cart__remove">
+                    <i class = "custom-icon-x"></i>
+                  </a>
+                </td>
+                <td class="product-name-label">
+
+                  <div class="grid__image">
+                    {%- assign image = item.image -%}
+                    {%- assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' -%}
+                    {% include 'theme-rias' %}
+                    <a
+                      href="{{ item.url | within: collections.all }}"
+                      class="lazyload product-image"
+                      data-bgset="{% include 'bgset', image: image %}"
+                      data-widths= "[{{ image_widths }}]"
+                      data-aspectratio="{{image.aspect_ratio }}"
+                      data-sizes="auto"
+                      data-parent-fit="contain">
+                    </a>
+                    <span class="loader"></span>
+                  </div>
+
+                </td>
+                <td class="product-title-cell">
+                  <a href="{{ item.url }}" class="size--18">
+                    {{ item.product.title }}
+                  </a>
+                </td>
+                <td data-label="{{ 'cart.label.price' | t }}" class="text-center">
+                  <span class="price">
+                    {% if item.original_price > item.final_price %}
+                      <s>{{ item.original_price | money }}</s>
+                    {% endif %}
+                    {{ item.final_price | money }}
+                  </span>
+
+                  {%- if item.unit_price_measurement -%}
+                    <span class="unit-price">
+                      {{ item.unit_price | money }}
+                      {%- if item.unit_price_measurement.reference_value != 1 -%}
+                        {{- item.unit_price_measurement.reference_value -}}
+                      {%- endif -%}
+                      {{ item.unit_price_measurement.reference_unit }}
+                    </span>
+                  {%- endif -%}
+                </td>
+                <td data-label="{{ 'cart.label.quantity' | t }}">
+                  <input type="number" name="updates[]" id="updates_{{ item.id }}" value="{{ item.quantity }}" min="0" data-id="updates_{{ item.id }}">
+                </td>
+                <td data-label="{{ 'cart.label.total' | t }}" class="text-right">
+                  <span class="price price--total">
+                    {% if item.original_line_price > item.final_line_price %}
+                      <s>{{ item.original_line_price | money }}</s>
+                    {% endif %}
+                    {{ item.final_line_price | money }}
+                  </span>
+
+                  {% comment %}
+                    Display the specific line item discount
+                  {% endcomment %}
+                  {% if item.line_level_discount_allocations.size > 0 %}
+                    <div class="cart__row-discounts text-right">
+                      {% if item.line_level_discount_allocations.size > 0 or item.discount_allocations.size > 0 %}
+                        {% for discount_allocation in item.line_level_discount_allocations %}
+                          <p>{{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | money }})</p>
+                        {% endfor %}
+                      {% elsif item.discount_allocations.size > 0 %}
+                        {% for discount_allocation in item.discount_allocations %}
+                          <p>{{ discount_allocation.discount_application.title }} (-{{ discount_allocation.amount | money }})</p>
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="cart__row grid">
+            <div class="grid__item large--one-half medium--down-one-whole">
+              {% if settings.enable_cart_notes %}
+                <textarea name="note" class="input-full" placeholder = "{{ 'cart.general.note' | t }}" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+              {% endif %}
+            </div>
+          <div class="grid__item large--text-right large--one-half medium--down-one-whole">
+            <div class="cart__row--bottom cart__subtotal">
+
+              {% comment %} Cart level discounts {% endcomment %}
+              {%- if cart.cart_level_discount_applications != blank -%}
+                <div class="cart__discounts">
+                  {%- for discount_application in cart.cart_level_discount_applications -%}
+                    <span>{{ discount_application.title }}</span>
+                    <span class="cart__discounts-price">{{ discount_application.total_allocated_amount | money | prepend: '-' }}</span>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {% comment %} Cart level subtotal {% endcomment %}
+              <div class="price">
+                <span>{{ 'cart.general.subtotal' | t }}</span>
+                <span class="cart__subtotal-price">{{ cart.total_price | money }}</span>
+              </div>
+            </div>
+            <small class = "shipping-note light-gray">{{ 'cart.general.shipping_at_checkout' | t }}</small>
+            <input type="submit" name="update" class="btn--secondary update-cart cart__update" value="{{ 'cart.general.update' | t }}">
+            <input type="submit" name="checkout" class="cart__checkout btn" value="{{ 'cart.general.checkout' | t }}">
+            {% if additional_checkout_buttons %}
+                <div class="additional-checkout-buttons">
+                  {{ content_for_additional_checkout_buttons }}
+                </div>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    {% else %}
+    {% comment %}
+      The cart is empty
+    {% endcomment %}
+    <h2>{{ 'cart.general.title' | t }}</h2>
+    <p>{{ 'cart.general.empty' | t }}</p>
+    <p>{{ 'cart.general.continue_browsing_html' | t }}</p>
+    {% endif %}
+  </div>
+</div>

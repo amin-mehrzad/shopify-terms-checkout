@@ -1,0 +1,106 @@
+{%- if section.blocks.size > 0 -%}
+
+	{%- for block in section.blocks -%}
+		{%- case block.type -%}
+
+			{%- when 'banner' -%}
+				{% comment %} Banner Settings {% endcomment %}
+				{%- assign section_id = block.id -%}
+			    {%- assign subheading = block.settings.subheading -%}
+			    {%- assign heading = block.settings.title -%}
+			    {%- assign text = block.settings.text -%}
+			    {%- assign image = block.settings.image -%}
+			    {%- assign height = block.settings.height -%}
+			    {%- assign text_position = block.settings.text_position -%}
+			    {%- assign heading_font_size = block.settings.heading_font_size -%}
+				{%- assign text_font_size = block.settings.text_font_size -%}
+			    {%- assign color_text = block.settings.color_text -%}
+			    {%- assign color_overlay = block.settings.color_overlay -%}
+			    {%- assign overlay_opacity = block.settings.overlay_opacity | times: 0.01 | round: 2 -%}
+
+			    <div class="banner" {{ block.shopify_attributes }}>
+			    	{% include 'banner' %} 
+			    </div>
+
+			{%- when 'product-feature' -%}
+				{%- comment -%} Product features settings {%- endcomment -%}
+
+				{%- assign feature_row = feature_row | plus: 1 -%}
+				{%- assign row = feature_row | modulo: 2 -%}
+		        {%- assign heading = block.settings.heading -%}
+		        {%- assign description = block.settings.description -%}
+		        {%- assign button_text = block.settings.button_text -%}
+		        {%- assign button_link = block.settings.button_link -%}
+		        {%- assign image_1 = block.settings.image_1 -%}
+		        {%- assign image_2 = block.settings.image_2 -%}
+		        {%- assign image_link_1 = block.settings.image_link_1 -%}
+		        {%- assign image_link_2 = block.settings.image_link_2 -%}
+		        {%- assign hide_image_2 = block.settings.hide_image_2 -%}
+				
+				<div class="product-features">
+					<div class="wrapper">
+				    	<div class="product-features__wrapper">
+				    		{% include 'product-feature' %}
+				    	</div>
+					</div>
+				</div>
+				
+			{%- when 'rich-text' -%}
+				{% comment %} Rich Text Settings {% endcomment %}
+
+				{%- assign show_image = false -%}
+				{%- assign section_id = block.id -%}
+				{%- assign text_position = block.settings.text_position -%}
+				{%- assign subheading = block.settings.subheading -%}
+				{%- assign heading = block.settings.heading -%}
+				{%- assign text = block.settings.text -%}
+				{%- assign button_text = block.settings.button_text -%}
+				{%- assign button_url = block.settings.button_url -%}
+				{%- assign color_text = block.settings.color_text | default: '#fffff' -%}
+				{%- assign color_bg = block.settings.color_bg | default: '#000000' -%}
+
+				<div class="rich-text" {{ block.shopify_attributes }}>
+					{% include 'rich-text' %}
+				</div>
+
+			{%- when 'image-with-text' -%}
+				{% comment %} Image with text Settings {% endcomment %}
+
+				{%- assign show_image = true -%}
+				{%- assign section_id = block.id -%}
+				{%- assign image = block.settings.image -%}
+				{%- assign image_background = block.settings.image_background -%}
+				{%- assign text_position = block.settings.text_position -%}
+				{%- assign subheading = block.settings.subheading -%}
+				{%- assign heading = block.settings.heading -%}
+				{%- assign text = block.settings.text -%}
+				{%- assign button_text = block.settings.button_text -%}
+				{%- assign button_url = block.settings.button_url -%}
+				{%- assign color_text = block.settings.color_text | default: '#fffff' -%}
+				{%- assign color_bg = block.settings.color_bg | default: '#000000' -%}
+
+				<div class="rich-text" {{ block.shopify_attributes }}>
+					{% include 'rich-text' %}
+				</div>
+
+			{%- when 'map' -%}
+				{% comment %} Map Settings {% endcomment %}
+
+				{%- assign section_id = block.id -%}
+				{%- assign api_key = block.settings.api_key -%}
+				{%- assign map_address = block.settings.map_address -%}
+				{%- assign map_height = block.settings.map_height -%}
+				{%- assign location_title = block.settings.location_title -%}
+				{%- assign location_title_size = block.settings.location_title_size -%}
+				{%- assign address = block.settings.address -%}
+				{%- assign card_color = block.settings.card_color -%}
+				{%- assign style = block.settings.style -%}
+				{%- assign zoom = block.settings.zoom -%}
+				{%- assign background_image = block.settings.background_image -%}
+
+				<div class="map" {{ block.shopify_attributes }}>
+					{% include 'map' %}
+				</div>
+		{%- endcase -%}
+	{%- endfor -%}
+{%- endif -%}

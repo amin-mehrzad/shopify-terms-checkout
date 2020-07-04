@@ -1,0 +1,39 @@
+{% if collection.image %}
+  {%- assign collection_image = collection.image -%}
+{% elsif collection.products.first and collection.products.first.images != empty %}
+  {%- assign collection_image = collection.products.first.featured_image -%}
+{% else %}
+  {% assign collection_image = blank %}
+{% endif %}
+
+<div class="list-collections__slide {% if collection == empty %}list-collections__slide--onboarding{% endif %}">
+    <a href="{% if collection.products == empty %}#!{% else %}{{ collection.url }}{% endif %}" class="list-collections__slide-image">
+      {%- unless collection_image == blank -%}
+        <div 
+           class="list-collections__slide-image-bg lazyload"
+           data-bgset="{% include 'bgset', image: collection_image %}"
+           data-aspectratio="{{ collection_image.aspect_ratio }}"
+           data-sizes="auto"
+        ></div>
+        <span class="loader"></span>
+        <noscript>
+          <div class="list-collections__slide-image-bg" style="background-image: url( {{ collection_image | img_url: '2048x' }} );"></div>
+        </noscript> 
+      {%- else -%}
+        <div class="list-collections__slide-image-bg">
+          {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+          {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}  
+        </div>
+      {%- endunless -%}
+      
+      <div class="list-collections__slide-overlay" style="background-color:{{ section.settings.overlay_color }}; opacity: {{ section.settings.overlay_opacity | prepend: '.' }};"></div>
+      
+      {%- if collection.title == blank -%}
+        {%- assign collection_title = 'homepage.onboarding.collection_title' | t -%}
+      {%- else -%}
+        {%- assign collection_title = collection.title -%}
+      {%- endif -%}
+      
+      <h3><span>{{ collection_title }}</span></h3>
+    </a>      
+</div>

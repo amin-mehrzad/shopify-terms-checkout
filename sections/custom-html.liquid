@@ -1,0 +1,50 @@
+{% comment %} Settings {% endcomment %}
+{%- assign subheading = section.settings.subheading -%}
+{%- assign heading = section.settings.title -%}
+{%- assign html = section.settings.html -%}
+
+<section class="custom-html-section" data-section-id="{{ section.id }}" data-section-type="custom-html">
+  <div class="wrapper">
+    {%- unless heading == blank and subheading == blank -%}
+      <div class="page-title">
+        {%- if heading != blank -%}
+          <h1 class="page-title__heading">{{ heading }}</h1>
+        {%- endif -%}
+      </div>
+    {% endunless %}
+
+    <div class="custom-html">
+      {%- if html -%}
+        <div class="custom-html__code">
+          {{ html }}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Custom HTML",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "HTML code"
+    },
+    {
+      "type": "html",
+      "id": "html",
+      "label": "Custom HTML",
+      "default": "<p>Once you write some HTML, it will render right here.</p>"
+    }
+  ],
+  "presets": [
+    {
+      "category": "Advanced",
+      "name": "Custom HTML"
+    }
+  ]
+}
+{% endschema %}

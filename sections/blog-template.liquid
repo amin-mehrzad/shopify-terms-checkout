@@ -1,0 +1,133 @@
+<!-- /sections/blog-template.liquid -->
+{%- assign columns = section.settings.post_columns | plus: 0 -%}
+
+{%- if columns == 1 -%}
+  {%- assign width = 'grid__item large--one-whole' -%}
+  {%- assign paginator = 5 -%}
+{%- elsif columns == 2 -%}
+  {%- assign width = 'grid__item large--one-half medium-down--one-whole' -%}
+  {%- assign paginator = 10 -%}
+{%- elsif columns == 3 -%}
+  {%- assign width = 'grid__item large--one-third medium-down--one-whole' -%}
+  {%- assign paginator = 9 -%}
+{%- else -%}
+  {%- assign width = 'grid__item large--one-quarter medium-down--one-whole' -%}
+  {%- assign paginator = 15 -%}
+{%- endif -%}
+
+{%- paginate blog.articles by paginator -%}
+
+<div class="grid wrapper">
+  <div class="grid__item push--large--one-sixth large--two-thirds">
+    <div class = "grid">
+      <h1 class = "section-title text-center">
+        {{ blog.title | link_to: blog.url }}
+        {%- if section.settings.show_rss_icon -%}
+        <a class="rss" href="{{ shop.url }}{{ blog.url }}.atom" target="_blank">
+         <span class="icon icon-rss"></span>
+        </a>
+        {%- endif -%}
+     </h1>
+
+     <div class = "grid__item push--large--one-eighth large--three-quarters medium-down--one-whole blog-tag-wrapper">
+
+        {% comment %}
+          Blog tags
+          {% endcomment %}
+          {%- if blog.all_tags.size > 0 -%}
+          <ul class="blog-tags-list inline-list text-center">
+            {%- for tag in blog.all_tags limit: 15 -%}
+            {%- if current_tags contains tag -%}
+              <li class = "blog-tag"><span>{{ tag }}</span></li>
+            {%- else -%}
+              <li class = "blog-tag">{{ tag | link_to_tag: tag }}</li>
+            {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          {%- endif -%}
+        </div>
+
+    {% comment %}
+      Loop through each article.
+      {% endcomment %}
+      <div class = "grid">
+        {%- for article in blog.articles -%}
+        <div class = "grid__item {{ width }} blog-child">
+          {%- if article.image -%}
+          <a href="{{ article.url }}" class="blog-child__image-link"> 
+            {%- assign image = article.image -%}
+            {%- assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' -%}
+            {%- include 'theme-rias' -%}
+            <div 
+              class="lazyload article-preview-image"
+              data-bgset="{% include 'bgset', image: image %}"
+              data-sizes="auto"
+              data-parent-fit="cover"
+            ></div>
+            <span class="loader"></span>
+            <noscript>
+              <div class="article-preview-image" alt="{{ image.alt | escape }}" style="background-image:url('{{ article.image | img_url:'2048x' }};')"></div>
+            </noscript>
+          </a>
+          {%- endif -%}
+          <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+          {%- capture author -%}{{ article.author }}{%- endcapture -%}
+          {%- capture date -%}<time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>{%- endcapture -%}
+          <small class = "light-gray">{{ 'blogs.article.author_on_date_html' | t: author: author, date: date }}</small>
+          <a href="{{ article.url }}">
+            <div class="rte">
+              {%- if article.excerpt.size > 0 -%}
+              {{ article.excerpt }}
+              {%- else -%}
+              <p>{{ article.excerpt_or_content | strip_html | truncatewords: 50 }}</p>
+              {%- endif -%}
+            </div>
+          </a>
+          <ul class="inline-list">
+            {%- if blog.comments_enabled? and article.comments_count != 0 -%}
+            <li>
+              <a href="{{ article.url }}#Comments" class = "blog-comments-link">
+                <i class = "custom-icon-comment"></i>
+                {{ 'blogs.comments.comments_with_count' | t: count: article.comments_count }}
+              </a>
+            </li>
+            {%- endif -%}
+            {%- include 'tags-article' -%}
+          </ul>
+        </div>
+        {%- endfor -%}
+        {%- if paginate.pages > 1 -%}
+        <hr>
+        <div class="pagination">
+          {{ paginate | default_pagination | replace: '&laquo; Previous', '&larr;' | replace: 'Next &raquo;', '&rarr;' }}
+        </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endpaginate %}
+
+{% schema %}
+  {
+    "name": "Blog",
+    "settings": [
+      {
+        "type": "range",
+        "id": "post_columns",
+        "label": "Posts per row",
+        "info": "Desktop only",
+        "min": 1,
+        "max": 4,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "show_rss_icon",
+        "label": "Show RSS icon",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}

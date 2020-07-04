@@ -1,0 +1,87 @@
+<!-- /sections/featured-product.liquid -->
+
+{% assign product = all_products[section.settings.featured_product] %}
+{% assign bg_color = section.settings.bg_color | default: '#fff' %}
+{% assign enable_reviews = settings.enable_reviews %}
+{% assign enable_swatches = settings.color_swatches %}
+
+{% if product.available %}
+  {% assign sold_out = false %}
+{% else %}
+  {% assign sold_out = true %}
+{% endif %}
+
+{% if product.compare_at_price_min > product.price_min %}
+  {% if sold_out %}
+    {% assign on_sale = false %}
+  {% else %}
+    {% assign on_sale = true %}
+  {% endif %}  
+{% else %}
+  {% assign on_sale = false %}
+{% endif %}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<div class = "wrapper {% if product == blank %} onboarding-fp {% endif %} product--{{section.id}}" id="featured-product"  data-section-id="{{ section.id }}" data-section-type="featured-product" data-reviews="{{ enable_reviews }}" data-swatches="{{ enable_swatches }}" style="background-color: {{ bg_color }};">
+  <div class="featured-product text-center {% if tag == true %} fp-has-tag {% endif %}">
+  {% unless product == blank %}
+    {% include 'product-images' %}
+    {% include 'product-form' %}
+    
+    {%- if settings.enable_yotpo and settings.yotpo_ID != '' -%}
+      <div class="yotpo--hidden">
+        {% include 'yotpo-reviews' %}
+      </div>
+    {%- endif -%}
+
+    <script type="application/json" id="ProductJson-{{ section.id }}">
+      {{ product | json }}
+    </script>
+    <script>
+    window.product = {{ product | json }};
+    window.product.add_label = {% if product.options.size == 1 %}true{% else %}false{% endif %};
+    window.product.label = "{{ product.options.first | escape }}";
+    window.selectCallback = PaloAlto.onVariantSelected;
+    </script>
+  {% else %}
+    {% unless emptyState %}
+      {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
+      {% assign emptyState = true %}
+    {% endunless %}
+    {% include 'onboarding-featured-product' %}
+  {% endunless %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Featured product",
+    "class":"featured-product-section",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_social_sharing_products",
+        "label": "Show social sharing buttons",
+        "default":true
+      },
+      {
+        "type": "color",
+        "id": "bg_color",
+        "label": "Background",
+        "default": "#fff"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ]
+  }
+{% endschema %}

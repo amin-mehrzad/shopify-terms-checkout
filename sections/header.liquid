@@ -1,0 +1,263 @@
+<style>
+.site-header__logo img { width: {{ section.settings.logo_max_width | append:'px' }} };
+</style>
+
+{%- assign header_position = section.settings.header_position -%}
+{%- assign color_header_bg_home = settings.color_header_bg_home -%}
+{%- assign color_header_home = settings.color_header_home | color_to_hex -%}
+
+{%- if color_header_bg_home == "rgba(0,0,0,0)" and color_header_home == "#ffffff" and header_position == 'relative' -%}
+  {%- assign colorFix = "color-fix" -%}
+{%- endif -%}
+
+{%- include 'nav-drawer' -%}
+{%- include 'cart-drawer' -%}
+
+<header class="site-header is-moved-by-drawer {{ header_position }} {{ colorFix }}" role="banner" data-section-id="{{ section.id }}"  data-section-type="header" data-position="{{ header_position }}" data-nav-position="{{ section.settings.menu_position }}" data-bg="{{ color_header_bg_home }}" data-color="{{ color_header_home }}">
+
+  <div class="wrapper {% if section.settings.top_bar_text != blank %}site-header-wrapper{% endif %}">
+		<div class="grid--full grid--table">
+        {% include 'site-nav' %}
+		{% include 'site-logo' %}
+
+		</div>
+	</div>
+  <div class="space-maker"></div>
+
+  {% if section.settings.show_search %}
+    {% include 'nav-search' %}
+  {% endif %}
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "header-wrapper",
+  "settings": [
+    {
+      "type": "select",
+      "id": "header_position",
+      "label": "Position",
+      "default": "fixed",
+      "options": [
+        {
+          "value": "fixed",
+          "label": "Stick to top on scroll"
+        },
+        {
+          "value": "relative",
+          "label": "Hide on scroll"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Custom logo (Transparent header)",
+      "info": "Used on Home and Collection pages when the header is transparent"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_not_home",
+      "label": "Custom logo (Default)",
+      "info": "Used on the other pages and on scroll when the header is sticky"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "label": "Custom logo width (in pixels)",
+      "min":25,
+      "max":400,
+      "default": 100,
+      "step":5,
+      "unit":"px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shop_name",
+      "label": "Show shop name"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "menu_searches_list",
+      "label": "Search menu",
+      "info": "This menu won't show dropdown items"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_links",
+      "label": "Show collection links",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "main-menu",
+      "label": "Link list",
+      "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "menu_position",
+      "label": "Position",
+      "default": "right",
+      "options": [
+        { "label": "Right", "value": "right" },
+        { "label": "Center", "value": "center" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Mega menu",
+      "type": "megamenu",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Submenu item",
+          "info": "This submenu will appear as a megamenu."
+        },
+        {
+          "type": "select",
+          "id": "images_position",
+          "label": "Images position",
+          "default": "left",
+          "options": [
+            { "label": "Left", "value": "left" },
+            { "label": "Right", "value": "right"},
+            { "label": "Stacked", "value": "stacked"}
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Image 1"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_1",
+          "label": "Image",
+          "info": "Recommended size: 500 x 800 px"
+        },
+        {
+          "type": "text",
+          "id": "title_1",
+          "label": "Heading"
+        },
+        {
+          "type": "url",
+          "id": "link_1",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Image 2"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image",
+          "info": "Recommended size: 500 x 800 px"
+        },
+        {
+          "type": "text",
+          "id": "title_2",
+          "label": "Heading"
+        },
+        {
+          "type": "url",
+          "id": "link_2",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Image 3"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_3",
+          "label": "Image",
+          "info": "Recommended size: 500 x 800 px"
+        },
+        {
+          "type": "text",
+          "id": "title_3",
+          "label": "Heading"
+        },
+        {
+          "type": "url",
+          "id": "link_3",
+          "label": "Link"
+        },
+        {
+          "type": "header",
+          "content": "Image 4"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_4",
+          "label": "Image",
+          "info": "Recommended size: 500 x 800 px"
+        },
+        {
+          "type": "text",
+          "id": "title_4",
+          "label": "Heading"
+        },
+        {
+          "type": "url",
+          "id": "link_4",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "name": "Dropdown image",
+      "type": "dropdown_image",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Submenu item",
+          "info": "This submenu will appear as a dropdown with links and image."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended size: 500 x 800 px"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "default": "left",
+          "options": [
+            { "label": "Left", "value": "left" },
+            { "label": "Right", "value": "right"}
+          ]
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

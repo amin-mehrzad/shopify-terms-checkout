@@ -1,0 +1,262 @@
+<!-- /sections/popup.liquid -->
+{% assign popup_title = section.settings.popup_header %}
+{% assign popup_content = section.settings.popup_content %}
+{% assign show_popup = section.settings.show_popup %}
+
+{% if show_popup == 'enabled' %}
+	{% assign show_popup = true %}
+	{% assign testmode = false %}
+{% elsif show_popup == 'disabled' %}
+	{% assign show_popup = false %}
+	{% assign testmode = false %}
+{% else %}
+	{% assign show_popup = true %}
+	{% assign testmode = true %}
+{% endif %}
+
+<div data-section-id="{{ section.id }}" data-section-type="popup">
+	{% if show_popup or testmode %}
+		{% assign image = section.settings.image %}
+		{% assign overlay_color = section.settings.overlay_color %}
+		{% assign overlay_opacity = section.settings.overlay_opacity | times: 0.01 %}
+
+		<style>.popup__background::after { background-color: {{ overlay_color }}; opacity: {{ overlay_opacity }};</style>
+
+		<div id="popup" class="modal popup text-center popup--{{ section.settings.popup_width }} popup--align-{{ section.settings.popup_position }} popup--text-{{ section.settings.text_color }}" style="display: none;"  data-reappear-time="{{ section.settings.popup_reappear_time }}" data-delay="{{ section.settings.popup_delay }}" data-enabled="{{ show_popup }}" data-testmode="{{ testmode }}">
+			{% if image != blank %}
+				<div class="popup__background lazyload"      
+					data-bgset="{% include 'bgset', image: image %}"
+					data-sizes="auto"
+					data-parent-fit="cover">
+				</div>
+				<noscript>
+					<div class="popup__background" style="background-image: url( {{ image | img_url: '1024x' }} );"></div>
+				</noscript>
+			{% else %}
+				<div class="popup__background"></div>
+			{% endif %}
+			<div class="popup__container">
+				{% if popup_content != blank or popup_title != blank %}
+					{% if popup_title != blank %}
+						<h2>{{ popup_title | truncatewords: 10 }}</h2>
+					{% endif %}
+					
+					{% if popup_content != blank %}
+						<div class="popup__text">
+							{{ popup_content }}
+						</div>
+					{% endif %}
+				{% else %}
+					{{ 'homepage.onboarding.popup_html' | t }}
+				{% endif %}
+
+				{% if section.settings.show_popup_newsletter %}
+					{% form 'customer' %}
+						<div class="newsletter">
+							{% if form.posted_successfully? %}
+								<div class="newsletter--form">
+									<div class="note form-success">{{ 'general.newsletter_form.newsletter_success' | t }}</div>
+								</div>
+							{% elsif form.errors %}
+								{{ form.errors | default_errors }}
+							{% endif %}
+
+					    	<input type="hidden" name="contact[accepts_marketing]" value="true">
+
+							<div class="newsletter--form">
+								<div class="input-group">
+
+									<input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email' | t }}" name="contact[email]" id="mail" class="input-group-field" aria-label="{{ 'general.newsletter_form.email' | t }}" autocorrect="off" autocapitalize="off">
+
+									<span class="input-group-btn">
+										<button type="submit" name="subscribe" id="subscribe" value="">
+											<i class="custom-icon-long-arrow"></i>
+										</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					{% endform %}
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+</div>
+{% schema %}
+{
+    "name": "Popup",
+    "settings": [
+    	{
+			"type": "select",
+			"id": "show_popup",
+			"label": "Display mode",
+			"default": "disabled",
+			"options": [
+				{
+					"value": "enabled",
+					"label": "Enabled"
+				},
+				{
+					"value": "disabled",
+					"label": "Disabled"
+				},
+				{
+					"value": "testmode",
+					"label": "Test mode"
+				}
+			]
+		},
+		{
+			"type": "select",
+			"id": "popup_width",
+			"label": "Width",
+			"default": "medium",
+			"options": [
+				{
+					"value": "large",
+					"label": "Large"
+				},
+				{
+					"value": "medium",
+					"label": "Medium"
+				}
+			]
+		},
+		{
+			"type": "select",
+			"id": "popup_position",
+			"label": "Position",
+			"info": "For medium width only",
+			"default": "center",
+			"options": [
+				{
+					"value": "left",
+					"label": "Left"
+				},
+				{
+					"value": "center",
+					"label": "Center"
+				},
+				{
+					"value": "right",
+					"label": "Right"
+				}
+			]
+		},
+		{
+			"type": "header",
+			"content": "Background"
+		},
+		{
+			"type": "image_picker",
+			"id": "image",
+			"label": "Image"
+		},
+		{
+			"type": "color",
+			"id": "overlay_color",
+			"label": "Overlay color",
+			"default": "#fff"
+		},
+		{
+			"type": "range",
+			"id": "overlay_opacity",
+			"label": "Overlay opacity",
+			"min": 0,
+			"max": 100,
+			"step": 5,
+			"unit": "%",
+			"default": 100
+		},
+        {
+	        "label": "Header",
+	        "type": "text",
+	        "id": "popup_header",
+	        "default": "20% Off - Summer Sale"
+      	},
+      	{
+	        "label": "Text",
+	        "type": "richtext",
+	        "id": "popup_content",
+	        "default": "<p>Popups are an ideal place to offer promotions and collect emails.</p>"
+      	},
+		{
+			"type": "select",
+			"id": "text_color",
+			"label": "Text color",
+			"default": "dark",
+			"options": [
+				{
+					"value": "dark",
+					"label": "Dark"
+				},
+				{
+					"value": "light",
+					"label": "Light"
+				}
+			]
+		},
+      	{
+	        "label": "Show newsletter signup",
+	        "type": "checkbox",
+	        "id": "show_popup_newsletter"
+      	},
+      	{
+	        "type": "select",
+	        "id": "popup_delay",
+	        "info": "Subscribers are added in the Customers section of your site admin.",
+	        "label": "Choose a delay until popup appears",
+	        "options": [
+	          	{
+		            "value": "0",
+		            "label": "None"
+	          	},
+	          	{
+		            "value": "3000",
+		            "label": "3 seconds"
+	          	},
+	          	{
+		            "value": "10000",
+		            "label": "10 seconds"
+	          	},
+	          	{
+		            "value": "30000",
+		            "label": "30 seconds"
+	          	},
+	          	{
+		            "value": "60000",
+		            "label": "1 minute"
+	          	},
+	          	{
+		            "value": "120000",
+		            "label": "2 minutes"
+	          	},
+	          	{
+		            "value": "300000",
+		            "label": "5 minutes"
+	          	}
+	        ]
+      	},
+      	{
+	        "type": "select",
+	        "id": "popup_reappear_time",
+	        "label": "Choose a duration until popup reappears",
+	        "info": "Popups can detract from a user's experience, so try to limit how often they appear.",
+	        "options": [
+          		{
+		            "value": "0",
+		            "label": "None"
+		        },
+          		{
+		            "value": "7",
+		            "label": "1 week"
+          		},
+          		{
+		            "value": "14",
+		            "label": "2 weeks"
+		        }
+        	]
+      	}
+    ]
+}
+{% endschema %}

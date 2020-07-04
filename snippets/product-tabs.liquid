@@ -1,0 +1,36 @@
+{%- if tab_1 != blank or tab_2 != blank or tab_3 != blank or enable_reviews or settings.enable_yotpo and settings.yotpo_ID != '' -%}
+    <div class="product-tabs js-product-tabs">
+      {%- if enable_reviews or settings.enable_yotpo and settings.yotpo_ID != '' -%}
+        <div class="product-tab" id="product-tab--reviews">
+          <div class="product-tab-title" itemprop="title">{{ 'products.general.reviews' | t }} <span class="icon-toggle"></span></div>
+          <div class="product-tab-content" itemprop="content">
+            <div class="product__reviews" id="reviews-scroll">
+              {%- if settings.enable_yotpo and settings.yotpo_ID != '' -%}
+                {% include 'yotpo-reviews' %}
+              {%- elsif enable_reviews -%}
+                <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+      {%- if tab_1 != blank -%}
+        <div class="product-tab">
+          <div class="product-tab-title" itemprop="title">{{ pages[tab_1].title }} <span class="icon-toggle"></span></div>
+          <div class="product-tab-content" itemprop="content">{{pages[tab_1].content}}</div>
+        </div>
+      {%- endif -%}
+      {%- if tab_2 != blank -%}
+        <div class="product-tab">
+          <div class="product-tab-title" itemprop="title">{{ pages[tab_2].title }} <span class="icon-toggle"></span></div>
+          <div class="product-tab-content" itemprop="content">{{pages[tab_2].content}}</div>
+        </div>
+      {%- endif -%}
+      {%- if tab_3 != blank -%}
+        <div class="product-tab">
+          <div class="product-tab-title" itemprop="title">{{ pages[tab_3].title }} <span class="icon-toggle"></span></div>
+          <div class="product-tab-content" itemprop="content">{{pages[tab_3].content}}</div>
+        </div>
+      {%- endif -%}
+    </div>
+{%- endif -%}

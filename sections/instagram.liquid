@@ -1,0 +1,62 @@
+<!-- /sections/instagram.liquid -->
+
+{% assign rows = section.settings.rows | plus:0 %}
+{% assign num_photos = rows | times: 6 %}
+
+<div data-section-type="instagram" data-section-id="{{ section.id }}">
+  <div class = "insta-wrapper clearfix">
+    {%- if section.settings.section_title != blank -%}
+      <h2 class = "text-center">{{ section.settings.section_title }}</h2>
+    {%- endif -%}
+    
+    {%- unless section.settings.instagram_access_token == blank -%}
+      <div id="instafeed" class="grid--full" data-access-token="{{ section.settings.instagram_access_token }}" data-num-photos="{{ num_photos }}"></div>
+    {%- else -%}
+      <div class="grid--full">
+        {% for i in (1..num_photos) %}
+          <div class ="grid__item large--one-sixth medium-down--one-half">
+            <div class="instafeed-photo-placeholder">
+              {{- 'image' | placeholder_svg_tag: "placeholder-svg-filled" -}}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {%- endunless -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Instagram",
+  "class":"instagram-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "instagram_access_token",
+      "label": "Instagram access token",
+      "info": "[Get your access token](https://www.presidiocreative.com/instagram-privacy-policy)"
+    },
+    {
+      "type": "range",
+      "id": "rows",
+      "label": "Rows",
+      "min":1,
+      "max": 6,
+      "step":1,
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title",
+      "default": "Instagram"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram",
+      "category": "Social"
+    }
+  ]
+}
+{% endschema %}

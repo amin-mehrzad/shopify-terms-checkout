@@ -1,0 +1,65 @@
+<!-- snippets/onboarding-empty-collection.liquid -->
+
+{% include 'grid-logic' %}
+
+<div class="grid__item">
+    <div class="grid-uniform helper-content fake-collection">
+      {% assign index = 1 %}
+      {% for i in (1..8) %}
+        {% capture index %}{% cycle 1,2,3,4,5,6 %}{% endcapture %}
+        {% capture index_hover %}{% cycle 5,6,1,2,3,4 %}{% endcapture %}
+        <div class="grid__item small--one-whole medium--one-half large--one-quarter helper-product">
+            <div class="table">
+              <div class="cell">
+                <a href="#!" class="grid__image">
+                  {% capture index %}{% cycle 1,2,3,4,5,6 %}{% endcapture %}
+                  {% capture index_hover %}{% cycle 5,6,1,2,3,4 %}{% endcapture %}
+                  <div class="product-image">
+                    {{ 'product-' | append: index | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+
+                  {%- if product_grid_slideshow -%}
+                    <div class="product-image__slider">
+                      {%- for j in (1..3) -%}
+                        <div class="product-image">
+                          {{ 'product-' | append: index_hover | placeholder_svg_tag: 'placeholder-svg' }}
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  {%- else -%}
+                    {%- if settings.product_grid_hover_image -%}
+                      <div class="product-image--hover">
+                        {{ 'product-' | append: index_hover | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+                </a>
+
+                {%- unless settings.quick_button == 'none' -%}
+                  <div class="btn-wrapper">
+                    {%- if settings.quick_button == 'view' -%}
+                      <span class="btn btn--quick-view">{{ 'products.general.quick_view' | t }}</span>
+                    {%- elsif settings.quick_button == 'buy' -%}
+                      <span class="btn btn--add-to-cart">{{ 'products.general.add_to_cart' | t }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endunless -%}
+              </div>
+            </div>
+            
+            <!-- Title -->
+            <a class="product-grid-item__title" href="#!">{{ 'homepage.onboarding.product_title' | t }}</a>
+            
+            <!-- Price -->
+            <p class="price">{{ 1999 | money }}</p>
+
+            <!-- Button -->
+            {%- if settings.show_product_grid_buttons -%}
+              <a class="btn" href="#!">{{ 'products.product.view_item' | t }}</a>
+            {%- endif -%}
+
+        </div>
+        {% assign index = index | plus: 1 %}
+      {% endfor %}
+    </div>
+</div>

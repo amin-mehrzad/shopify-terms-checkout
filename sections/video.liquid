@@ -1,0 +1,277 @@
+<!-- /sections/background-video.liquid -->
+
+{%- if section.settings.btn_link != blank -%}
+  {%- assign btn_link =  section.settings.btn_link  -%}
+{%- else -%}
+  {%- assign btn_link = "#!" -%}
+{%- endif -%}
+
+{%- assign video_id = section.settings.hero_video_link.id -%}
+{%- assign video_enable_sound = section.settings.video_enable_sound -%}
+{%- assign section_height = section.settings.video_height | plus: 0 -%}
+{%- assign section_height_mobile = section.settings.video_height_mobile| plus: 0 -%}
+
+{%- if section.settings.enable_autoplay -%}
+{%- assign autoplay_var = 1 -%}
+{%- else -%}
+{%- assign autoplay_var = 0 -%}
+{%- endif -%}
+
+{%- assign text_position = section.settings.text_position -%}
+{%- assign overlayOpacity = section.settings.overlay_opacity | prepend: '.' -%}
+{%- assign heading_font_size = section.settings.heading_font_size -%}
+{%- assign text_font_size = section.settings.text_font_size -%}
+
+<style>
+.video--{{section.id}} {
+    {% unless section.settings.image == blank %}
+        background: url('{{ section.settings.image | img_url:'2048x' }}');
+    {% else %}
+        background: url(" {% include 'placeholder_svg_uri', placeholder : 'lifestyle-1' %} ");
+    {% endunless %}
+}
+
+@media screen and (max-width: 991px) {
+  .video--{{ section.id }} {
+    {% unless section.settings.image == blank %}
+          background: url('{{ section.settings.image | img_url:'1024x' }}'); }
+    {% else %}
+        background: url(" {% include 'placeholder_svg_uri', placeholder : 'lifestyle-1' %} ");
+    {% endunless %}
+  }
+}
+</style>
+
+<div class="featured-video-section" data-section-id="{{ section.id }}" data-section-type="featured-video">
+  <div class="video-wrapper">
+    <div class="{{ text_alignment }} {{ text_position }} text-inside no-play-button">
+      <!-- Text -->
+      <div class="video-text-wrapper wrapper">
+          {% if section.settings.title != blank %}
+          <h1 class="main-heading size--{{ heading_font_size }} {{ section.settings.text_color }}">{{ section.settings.title | escape }}</h1>
+          {% endif %}
+          {% if section.settings.main_subheading != blank %}
+          <h2 class="main-subheading size--{{ text_font_size }} {{ section.settings.text_color }}">{{ section.settings.main_subheading | escape }}</h2>
+          {% endif %}
+
+          <!-- Button -->
+          {% if section.settings.btn_text != blank %}
+          <div class="buttons-wrapper">
+            {% if section.settings.btn_text != blank %}
+            <a class="btn call-to-action" id="primary-cta" href="{{ btn_link }}">{{ section.settings.btn_text }}</a>
+            {% endif %}
+          </div>
+          {% endif %}
+            <span class="play-button-mobile visually-hidden">
+              <span class="filled-circle custom-icon-filled-circle"></span>
+              <span class="stroke-circle custom-icon-stroke-circle"></span>
+              <span class="triangle custom-icon-triangle"></span>
+            </span>
+        </div> 
+      </div>
+
+      <!-- Video -->
+      <div class="video video--{{ section.id }} {{ section.settings.video_height }} {% if section.settings.image == blank %} placeholder-bg {% endif %}" id="video-{{ section.id }}-container" data-enable-sound="{{ video_enable_sound }}">
+
+      <div class="video__iframe" id="video-{{ section.id }}" data-video-id="{{ video_id }}"></div>
+      {% unless section.settings.hero_overlay_color == blank %}
+        {% assign overlay_opacity = section.settings.overlay_opacity | prepend: '.' %}
+        <div class="overlay" style="background-color:{{ section.settings.hero_overlay_color }}; opacity:{{ overlay_opacity }};"></div>
+      {% endunless %}
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Video",
+  "class": "featured-video-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Headings"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",
+      "default": "center-center",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top left"
+        },
+        {
+          "value": "top-center",
+          "label": "Top center"
+        },
+        {
+          "value": "top-right",
+          "label": "Top right"
+        },
+        {
+          "value": "center-center",
+          "label": "Center"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "text-light",
+      "options": [
+        {
+          "value": "text-light",
+          "label": "Light"
+        },
+        {
+          "value": "text-dark",
+          "label": "Dark"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Welcome to Palo Alto"
+    },
+    {
+      "type": "textarea",
+      "id": "main_subheading",
+      "label": "Subheading",
+      "default": "This subheading helps you provide some more detail to the title above."
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading size",
+      "unit": "px",
+      "step": 4,
+      "min": 40,
+      "max": 64,
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Text size",
+      "unit": "px",
+      "step": 2,
+      "min": 16,
+      "max": 28,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button label",
+      "default": "Welcome"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video_url",
+      "id": "hero_video_link",
+      "label": "Video link",
+      "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+      "accept": [
+        "youtube"
+      ],
+      "info": "YouTube links only"
+    },
+    {
+      "type": "select",
+      "id": "video_height",
+      "label": "Video height",
+      "default": "sixty-fifty-height-hero",
+      "options": [
+        {
+          "value": "one-hundred-height-hero",
+          "label": "Full screen height"
+        },
+        {
+          "value": "seven-fifty-height-hero",
+          "label": "750px"
+        },
+        {
+          "value": "sixty-fifty-height-hero",
+          "label": "650px"
+        },
+        {
+          "value": "five-fifty-height-hero ",
+          "label": "550px"
+        },
+        {
+          "value": "four-fifty-height-hero",
+          "label": "450px"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "video_enable_sound",
+      "label": "Enable sound",
+      "default": false,
+      "info": "If enabled video will not autoplay on mobile devices."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "min": 0,
+      "max": 95,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "hero_overlay_color",
+      "label": "Overlay color",
+      "default": "#000"
+    }, 
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Poster image",
+      "info": "Displays while the video loads."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video",
+      "category": "video"
+    }
+  ]
+}
+{% endschema %}

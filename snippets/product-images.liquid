@@ -1,0 +1,128 @@
+{% assign thumbnailLength = product.images | size %}
+{% comment %}
+Mobile Thumbnail Logic
+{% endcomment %}
+{% if thumbnailLength == 1 %}
+  {% assign thumbnailMobileColumns = 'medium-down--hide' %}
+{% elsif thumbnailLength == 2 %}
+  {% assign thumbnailMobileColumns = 'medium-down--one-half' %}
+{% elsif thumbnailLength == 3 %}
+  {% assign thumbnailMobileColumns = 'medium-down--one-third' %}
+{% elsif thumbnailLength > 3 %}
+  {% assign thumbnailMobileColumns = 'medium-down--one-quarter' %}
+{% endif %}
+{% comment %}
+Desktop Thumbnail Logic
+{% endcomment %}
+{% if thumbnailLength == 1 %}
+  {% assign thumbnailColumns = 'grid__item large--down-hide' %}
+{% else %}
+  {% assign thumbnailColumns = 'grid__item large--one-whole' %}
+{% endif %}
+{% assign current_variant = product.selected_or_first_available_variant %}
+<div class = "grid">
+  <div class = "grid__item large--one-quarter medium-down--hide"></div>
+    <div class="grid__item large--one-half medium-down--one-whole">
+      <div class="product-single__photos" id="ProductPhoto">
+        <div class = "product-page-table">
+            
+            {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+            
+            <div class="popup-gallery" >
+              <div class = "product-page-frame frame frame--{{section.id}}">
+                {% comment %}
+                Tag logic
+              {% endcomment %}
+              
+              {% for variant in product.variants %}
+                {% assign sold_out = false %}
+                {% if variant.available == false %}
+                  {% assign sold_out = true %}
+                {% endif %}
+                {% assign on_sale = false %}
+                {% if variant.compare_at_price > variant.price %}
+                  {% assign on_sale = true %}
+                {% endif %}
+              {% endfor %}
+              
+              <a href="{{ product.url | within: collection }}">
+                {% if on_sale %}
+                  <div class="product-status-flag tag-fp fp-on-sale-tag tag--{{ settings.product_badge_style }}" id = "tag-{{ variant.id }}" ><span>{{ 'products.product.on_sale_html' | t }}</span></div>
+                {% endif %}           
+              {%- assign image = featured_image -%}
+              {% assign image_widths = '590,700,800,1000,1200,1500,1800,2000,2400' %}
+              {% include 'theme-rias' %}
+
+                <div
+                  id="{{featured_image.id}}" 
+                  class="mfp-zoom-in-cur productvarimg featured-image featured-image--{{section.id}} lazyload"
+                  data-bgset="{% include 'bgset', image: image %}"
+                  data-widths= "[{{ image_widths }}]"
+                  data-aspectratio="{{image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="contain"
+                  data-mfp-src = "{{ featured_image.src | img_url: 'master' }}">
+                </div>
+                <span class="loader"></span>
+                <noscript>
+                  <div class="featured-image" style="background-image: url('{{ image | img_url: '600x' }}')"></div>
+                </noscript>
+              </a>
+              
+              {% assign featured_image_id = featured_image.id %}
+              {% for image in product.images %}
+                {% if image.id != featured_image.id %}
+                  {% assign image_widths = '590,700,800,1000,1200,1500,1800,2000,2400' %}
+                  {% include 'theme-rias' %}
+                  <a href="{{ product.url | within: collection }}">
+                    <div
+                      id="{{image.id}}"
+                      class="hide mfp-zoom-in-cur featured-image not-featured-image featured-image--{{section.id}} lazyload"
+                      data-bgset="{% include 'bgset', image: image %}"
+                      data-widths= "[{{ image_widths }}]"
+                      data-aspectratio="{{image.aspect_ratio }}"
+                      data-sizes="auto"
+                      data-parent-fit="contain"
+                      data-mfp-src ="{{ image.src | img_url: 'master' }}">
+                    </div>
+                    <span class="loader"></span>
+                    <noscript>
+                      <div class="featured-image" style="background-image: url('{{ image | img_url: '600x' }}')"></div>
+                    </noscript>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Thumbnails -->
+  <div class = "grid__item one-eighth medium--one-half push--medium--one-quarter small--one-whole">
+  {% if product.images.size > 1 %}
+  <div class="product-single__thumbnails grid--full gallery" id="ProductThumbs">
+    <div class = "grid__item {{thumbs_width}}">
+      <div class = "grid-uniform">
+        <div class="{{ thumbnailColumns }} {{ thumbnailMobileColumns }} thumbnail-wrapper active-thumbnail">
+          <a href="{{ featured_image.src | img_url: 'original' }}" class="product-single__thumbnail">
+            <img data-id="{{featured_image.id}}" src="{{ featured_image.src | img_url: 'compact' }}" data-action="show-product-image" alt="{{ featured_image.alt | escape }}" id="ProductPhoto" class = "alt-image">
+          </a>
+        </div>
+        {% for image in product.images %}
+          {% if image.id != featured_image.id %}
+            <div class="{{ thumbnailColumns }} {{ thumbnailMobileColumns }} thumbnail-wrapper">
+              <a href="{{ image.src | img_url: 'original' }}" class="product-single__thumbnail">
+                <img data-id="{{image.id}}" src="{{ image.src | img_url: 'compact' }}" data-action="show-product-image" alt="{{ image.alt | escape }}" class = "alt-image">
+              </a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  </div>
+  <div class = "grid__item one-eighth medium-down--hide"></div>
+</div>

@@ -1,0 +1,66 @@
+<div data-section-type="announcement-bar" data-section-id="{{ section.id }}">
+  {% if section.settings.show_announcement_bar and section.blocks.size > 0 %}
+    <div class="top-bar wrapper" style="background:{{ section.settings.color_announcement_bar_bg }};">
+      <div class="top-bar__slider">
+        {% for block in section.blocks %}
+          {% assign text = block.settings.text %}
+          {% assign link = block.settings.link %}
+          <div class="top-bar__slide" style="color: {{ section.settings.color_announcement_bar_text }};" {{ block.shopify_attributes }}>
+            {% if link != blank %}
+              <a href="{{ link }}" >
+                {{ text | truncatewords: 50 | strip_html }}
+              </a>
+            {% else %}
+              {{ text | truncatewords: 50 | strip_html }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type":"checkbox",
+      "id":"show_announcement_bar",
+      "label":"Show announcement bar"
+    },
+    {
+      "type": "color",
+      "id": "color_announcement_bar_bg",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "color_announcement_bar_text",
+      "label": "Text",
+      "default": "#333"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Announcement",
+      "type": "announcement",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Announce something here"      
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

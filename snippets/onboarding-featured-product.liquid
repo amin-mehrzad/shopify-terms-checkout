@@ -1,0 +1,92 @@
+{% comment %}
+  Blank single product state
+{% endcomment %}
+
+{% unless emptyState %}
+  {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
+  {% assign emptyState = true %}
+{% endunless %}
+
+<div>
+
+  <!-- Fake Image -->
+  <div class="popup-gallery" >
+    <div class = "product-page-frame frame">
+        <a href="#!" class = "fake-product">
+          {{ 'product-5' | placeholder_svg_tag: 'placeholder-svg' }}
+        </a>
+    </div>
+  </div>
+
+  <div class="product-form product-form--onboarding">
+    <!-- Fake Product Text -->
+    <h1 class = "featured-product-title">
+      <a href="#!">{{ 'homepage.onboarding.product_title' | t }}</a>
+    </h1>
+
+    {%- if enable_reviews or settings.enable_yotpo and settings.yotpo_ID != '' -%}
+      <div class="product__badge">
+        <span class="spr-badge" data-rating="0.0">
+          <span class="spr-starrating spr-badge-starrating">
+            <i class="spr-icon spr-icon-star-empty"></i>
+            <i class="spr-icon spr-icon-star-empty"></i>
+            <i class="spr-icon spr-icon-star-empty"></i>
+            <i class="spr-icon spr-icon-star-empty"></i>
+            <i class="spr-icon spr-icon-star-empty"></i>
+          </span>
+        </span>
+      </div>
+    {%- endif -%}
+
+    <h2 class="product-price" itemprop="price">
+      <span id="ProductPrice">
+        {{ 1999 | money }}
+      </span>
+    </h2>
+
+    <div class="variants-wrapper">
+      {% if enable_swatches %}
+        <div class="swatch clearfix">
+          <div class="header">Color</div>
+          <div data-value="White" class="swatch-element color white available">
+            <input id="product_id-{{ section.id }}" type="radio" name="product_id-{{ section.id }}" value="white" title="White" checked>
+
+            <label for="product_id-{{ section.id }}">
+              <span style="background-color: white;"></span>
+            </label>
+          </div>
+
+          <div data-value="Grey" class="swatch-element color grey available">
+            <input id="product_id-{{ section.id }}" type="radio" name="product_id-{{ section.id }}" value="Grey" title="Grey">
+
+            <label for="product_id-{{ section.id }}">
+              <span style="background-color: grey;"></span>
+            </label>
+          </div>
+
+          <div data-value="Black" class="swatch-element color black available">
+            <input id="product_id-{{ section.id }}" type="radio" name="product_id-{{ section.id }}" value="Black" title="Black">
+
+            <label for="product_id-{{ section.id }}">
+              <span style="background-color: black;"></span>
+            </label>
+          </div>
+        </div>
+      {% endif %}
+      {% unless section.settings.hide_quantity %}
+        <div class="qtydiv">
+          <label for="Quantity" class="quantity-selector">{{ 'products.product.quantity' | t }}</label>
+          <input type="text" id="Quantity1" name="quantity" value="1" min="1" class="quantity-selector quantity-input">
+        </div>
+      {% endunless %}
+    </div>
+
+    <button type="submit" name="add" id="AddToCart" class="btn">
+      <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
+    </button>
+
+    <div class="product-description rte text-center" itemprop="description">
+      <p>Once you choose a product, its description will populate here automatically.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<!-- /snippets/site-logo.liquid -->
+{%- capture logo_not_home -%}
+  {%- assign image = section.settings.logo_not_home -%}
+  {%- if image != blank -%}
+    <a href="/" itemprop="url" class="site-header__logo-link site-header__logo-link--other {% if section.settings.logo == blank %}site-header__logo-link--single{% endif %}">
+      {% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+      {% include 'theme-rias' %}
+      <img 
+         class="lazyload"
+         src="{{ image | img_url: 'small' }}"
+         data-src="{{ image_url_pattern }}"
+         data-widths= "[{{ image_widths }}]"
+         data-aspectratio="{{image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="{{ image.alt | escape }}">
+      <span class="loader"></span>
+      <noscript>
+        <img src="{{ image | img_url: '1024x' }}" alt="{{ image.alt | escape }}">
+      </noscript>
+    </a>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture logo_home -%}
+  {%- assign image = section.settings.logo -%}
+  {%- if image != blank -%}
+    <a href="/" itemprop="url" class="site-header__logo-link site-header__logo-link--home {% if section.settings.logo_not_home == blank %}site-header__logo-link--single{% endif %}">
+      {% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+      {% include 'theme-rias' %}
+      <img 
+         class="lazyload"
+         src="{{ image | img_url: 'small' }}"
+         data-src="{{ image_url_pattern }}"
+         data-widths= "[{{ image_widths }}]"
+         data-aspectratio="{{image.aspect_ratio }}"
+         data-sizes="auto"
+         alt="{{ image.alt | escape }}">
+      <span class="loader"></span>
+      <noscript>
+        <img src="{{ image | img_url: '1024x' }}" alt="{{ image.alt | escape }}">
+      </noscript>
+    </a>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if logo_not_home != blank or logo_home != blank or section.settings.show_shop_name -%}
+  <div class="grid__item largest--one-third one-half">
+    <h1 class="site-header__logo large--left" itemscope itemtype="http://schema.org/Organization">
+      
+      {{- logo_not_home -}}
+      {{- logo_home -}}
+
+      {%- if section.settings.show_shop_name -%}
+        <a class="logo" href="/" itemprop="url">{{ shop.name }}</a>
+      {%- endif -%}
+    </h1>
+  </div>
+{%- endif -%}

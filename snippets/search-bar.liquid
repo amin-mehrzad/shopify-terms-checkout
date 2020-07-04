@@ -1,0 +1,16 @@
+<!-- /snippets/search-bar.liquid -->
+
+{% comment %}
+
+  Note we are using 'input-group' for the layout
+  
+{% endcomment %}
+
+<form action="/search" method="get" class="input-group search-bar" role="search">
+  <input type="search" class = "search-input" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" class="input-group-field" aria-label="{{ 'general.search.placeholder' | t }}">
+  <span class="input-group-btn">
+    <button type="submit" class="icon-fallback-text">
+      <span class="icon icon-search desktop-search" aria-hidden="true"></span>
+    </button>
+  </span>
+</form>

@@ -1,0 +1,122 @@
+{% comment %} Icons row {% endcomment %}
+
+{% assign background = section.settings.color_icons_bg %}
+{% assign color = section.settings.color_icons_text %}
+{% assign alignment = section.settings.alignment %}
+
+<style>
+  [data-section-id="{{ section.id }}"] .icons-row--background { color: {{ color }}; background-color: {{ background }}; }
+</style>
+
+{% if section.blocks.size > 0 %}
+<div data-section-id="{{ section.id }}" data-section-type="icons-row">
+  <div class="icons-row--background">
+    <div class="wrapper">
+
+      <div class="icons-row-wrapper icons-row__slider text-{{ alignment }}">
+        {% for block in section.blocks %}
+          {% assign title = block.settings.title %}
+          {% assign content = block.settings.content %}
+          {% if block.settings.icon contains ' ' %}
+            {% assign icon_words = block.settings.icon | split: ' ' %}
+          {% else %}
+            {% assign icon_words = block.settings.icon | split: '-' %}
+          {% endif %}
+          {%- capture icon -%}{%- for word in icon_words -%}{%- unless forloop.index == 1 -%}-{%- endunless -%}{{ word | lowercase | capitalize }}{%- endfor -%}{%- endcapture -%}
+
+          <div class="icons-row__item" {{ block.shopify_attributes }}>
+            {% if icon != blank %}
+            <span class="icons-row__icon icon-{{ icon }}"></span>
+            {% endif %}
+
+            {% if title != blank %}
+            <h3 class="icons-row__title">{{ title }}</h3>
+            {% endif %}
+
+            {% if content != blank %}
+            <p class="icons-row__content">{{ content }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Icons row",
+  "max_blocks": 6,
+  "class": "icons-row",
+  "settings": [
+    {
+      "type": "color",
+      "id": "color_icons_bg",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "color_icons_text",
+      "label": "Text",
+      "default": "#333"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "label": "Center", "value": "center" },
+        { "label": "Left", "value": "left" }
+      ],
+      "default": "center"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon name",
+          "default": "home",
+          "info": "[Click here](https://cdn.shopify.com/s/files/1/0015/4484/7407/files/demo.html?3567025686357044418) to view the list of available icons. Example: Shop"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Content",
+          "default": "Palo Alto is a powerful Shopify theme that will set you apart from the rest with a variety of sections and features."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Icons row",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "text"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

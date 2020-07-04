@@ -1,0 +1,86 @@
+{% if template contains 'product' or template == 'index' or template == 'collection' %}
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+{% endif %}
+
+{{ 'handlebars.min.js' | asset_url | script_tag }}
+{% include 'ajax-cart-template' %}
+{{ 'ajax-cart.js' | asset_url | script_tag }}
+{% include 'currencies' %}
+
+<script>
+$(document).ready(function() {
+  ajaxCart.init({
+    formSelector: '#AddToCartForm',
+    cartContainer: '#CartContainer',
+    addToCartSelector: '#AddToCart',
+    cartCountSelector: '.CartCount',
+    cartCostSelector: '#CartCost',
+    moneyFormat: {{ shop.money_format | json }}
+  });
+
+  window.monies = {{ shop.money_format | json }};
+});
+
+PaloAlto.initProductVariants = function(container, product, sectionId){
+  var selectorClass = 'productSelect--'+sectionId;
+
+  if($('#' + selectorClass).length > 0){
+    new Shopify.OptionSelectors(selectorClass, {
+      product: product,
+      onVariantSelected: onVariantSelected
+    });
+    var selectorWrapper = $(container).find('.selector-wrapper');
+    var selectID = selectorWrapper.find('select').attr('id');
+    if(product.options.length == 1){
+      $('<label for="' + selectID + '" data-product-id="' + product.id + '">' + product.options[0] + '</label>').insertBefore(selectorWrapper);
+    }
+
+    selectorWrapper.each(function() {
+      var option = $(this).find('select').data('option');
+      $(this).attr('data-option', option);
+    });
+  }
+  $(container).find($('.product-form')).css('visibility','visible');
+
+  ajaxCart.init({
+    formSelector: '#AddToCartForm--'+sectionId,
+    cartContainer: '#CartContainer',
+    addToCartSelector: '#AddToCart--'+sectionId,
+    cartCountSelector: '.CartCount',
+    cartCostSelector: '#CartCost',
+    moneyFormat: {{ shop.money_format | json }}
+  });
+
+  function onVariantSelected (variant, selector) {
+    $(document).ready(function() {
+      timber.productPage({
+        money_format:  {{ shop.money_format | json }},
+        variant: variant,
+        selector: selector,
+        container:container
+      });
+    });
+
+    PaloAlto.onVariantSelected(variant, selector);
+  };
+
+};
+</script>
+
+{% comment %}
+Much of the theme's Javascript is in the theme.js.liquid file, called below.
+{% endcomment %}
+{{ 'theme.js' | asset_url | script_tag }}
+
+<script>
+{% if newHash %}
+  $(function() {
+    timber.updateHash('{{ newHash }}');
+  });
+{% endif %}
+{% if resetPassword %}
+  $(function() {
+    timber.resetPasswordSuccess();
+  });
+{% endif %}
+</script>

@@ -1,0 +1,383 @@
+<!-- /sections/collection-template.liquid -->
+
+{% assign subcollectionsPosition = section.settings.subcollections %}
+{% assign subcollections_per_row = section.settings.subcollections_per_row %}
+{% assign filter_mode = section.settings.filter_mode %}
+{% unless filter_mode == 'hidden' %}
+  {% assign enable_filters = true %}
+{% else %}
+  {% assign enable_filters = false %}
+{% endunless %}
+{% assign enable_sorting = section.settings.enable_collection_sorting %}
+{% assign position_filters = section.settings.position_filters %}
+{% assign enable_reviews = settings.enable_reviews %}
+{% assign enable_swatches = settings.color_swatches %}
+{% assign product_grid_slideshow = settings.product_grid_slideshow %}
+{% assign product_grid_slideshow_arrows = settings.product_grid_slideshow_arrows %}
+{% assign subheading = section.settings.subheading %}
+{% assign heading_font_size = section.settings.heading_font_size %}
+{% assign text_font_size = section.settings.text_font_size %}
+{% assign collections_all = false %}
+{% if collection.handle == 'all' %}
+  {% assign collections_all = true %}
+{% endif %}
+
+{%- if enable_filters -%}
+  {% comment %}
+  Assign all selected tags to the container data attributes
+  {% endcomment %}
+  {%- assign selected_tags = '' -%}
+
+  {%- for tag in current_tags -%}
+    {%- assign current_tag_handle = tag | replace: '&#39;', '' | replace: '&#34;', '' | handle -%}
+    {%- assign selected_tags = selected_tags | append: current_tag_handle -%}
+    {%- unless forloop.last -%}
+      {%- assign selected_tags = selected_tags | append: '+' -%}
+    {%- endunless -%}
+  {%- endfor -%}
+
+{%- endif -%}
+
+<div data-section-type="collection-template" data-section-id="{{ section.id }}" data-reviews="{{ enable_reviews }}" data-swatches="{{ enable_swatches }}" data-subcollections="{{ subcollectionsPosition }}" data-product-grid-slideshow="{{ product_grid_slideshow }}" data-filters="{{ enable_filters }}" data-collection="{{ collection.url | default: '/collections/all' }}" data-tags='{% if selected_tags != blank %}{{ selected_tags | split: '+' | json }}{% else %}[]{% endif %}' data-sort="{{ collection.sort_by | default: collection.default_sort_by }}" data-filter-mode="{{ filter_mode }}">
+
+  {% comment %}
+  If there is a collection image, the split header is used.
+  Else, the plain, centered text header is used.
+  {% endcomment %}
+
+  {% comment %}
+  Collection header
+  {% endcomment %}
+
+  {% capture collection_header %}
+    {% if collection.description != blank %}
+      <header class="collection-header wrapper grid--full {% unless collection.image %}collection-header--no-image{% endunless %}">
+        <div class="grid__item large--one-whole">
+          {% unless collections_all %}
+            {% if subheading != blank %}
+              <div class="section-header__subheading collection-subheading">{{ subheading }}</div>
+            {% endif %}
+          {% endunless %}
+          <h1 class="section-header__title collection-title size--{{ heading_font_size }}">{{ collection.title | escape }}</h1>
+          <div class="rte rte--header collection-description size--{{ text_font_size }}">
+            {{ collection.description }}
+          </div>
+        </div>
+      </header>
+    {% else %}
+      <header class="collection-header wrapper {% unless collection.image %}collection-header--no-image{% endunless %}">
+        <div class="large--one-whole">
+          {% unless collections_all %}
+            {% if subheading != blank %}
+              <div class="section-header__subheading collection-subheading">{{ subheading }}</div>
+            {% endif %}
+          {% endunless %}
+          {% if collection.handle == 'all' %}
+            <h1 class="section-header__title collection-title size--{{ heading_font_size }}">{{ 'products.general.catalog' | t }}</h1>
+          {% else %}
+            <h1 class="section-header__title collection-title size--{{ heading_font_size }}">{{ collection.title }}</h1>
+          {% endif %}
+        </div>
+      </header>
+    {% endif %}
+  {% endcapture %}
+
+  {% if collection.image %}
+    {% comment %} Banner Settings {% endcomment %}
+    {% assign banner_height = section.settings.banner_height %}
+    {% assign banner_text_position = section.settings.banner_text_position %}
+
+    {% assign banner_color_text = section.settings.banner_color_text %}
+    {% assign banner_color_overlay = section.settings.banner_color_overlay %}
+    {% assign banner_overlay_opacity = section.settings.banner_overlay_opacity | times: 0.01 | round: 2 %}
+
+    <style>
+      .banner-inner::after { background-color: {{ banner_color_overlay }}; opacity: {{ banner_overlay_opacity }}; }
+      .banner .collection-header { color: {{ banner_color_text }} !important; }
+    </style>
+
+    <section class="banner">
+      <div class="banner-inner banner--{{ banner_height }} banner--text-{{ banner_text_position }}">
+        {% unless banner_height == 'original-height' %}
+          <div class="banner-img lazyload" data-bgset="{% include 'bgset', image: collection.image %}" data-sizes="auto" data-parent-fit="cover"></div>
+          <span class="loader"></span>
+
+          <noscript>
+            <div class="banner-img" style="background-image:url('{{collection.image | img_url: '1024x' }}'); background-size: cover; background-position: center center; background-repeat: no-repeat;"></div>
+          </noscript>
+        {% else %}
+          {% assign image = collection.image %}
+          {% assign image_widths = '295,394,590,700,800,1000,1200,1500,1800,2000,2400' %}
+          {% include 'theme-rias' %}
+          <img class="banner-img--original lazyload"
+               data-src="{{ image_url_pattern }}" 
+               data-widths="[{{ image_widths }}]"
+               data-aspectratio="{{ image.aspect_ratio }}"
+               data-sizes="auto"
+               alt="{{ collection.title }}">
+          <span class="loader"></span>
+          <noscript>
+            <img src="{{ image | img_url: '2048x' }}" alt="{{ image.alt | escape }}" class="banner-img--original no-js-image">
+          </noscript>
+        {% endunless %}
+
+        <div class="banner-content">
+          {{ collection_header }}
+        </div>
+      </div>  
+    </section>
+  {%- else -%}
+    {%- assign bg_color = section.settings.bg_color | default: '#fafafa' -%}
+    <style>
+      .site-header,
+      .collection-header--no-image { background: {{ bg_color }}; }
+    </style>
+
+    {{ collection_header }}
+  {%- endif -%}  
+  <div class="collection__wrapper">
+    {% if enable_filters %}
+      {% include 'collection-filters' %}
+    {% endif %}
+
+    {% assign collection_count = collection.all_products_count %}
+    <div class="collection__products grid--full wrapper">
+
+      {%- if subcollectionsPosition == 'top' -%}
+        {% include 'sub-collections' %}
+      {%- endif -%}
+
+      {%- if section.settings.show_breadcrumbs -%}
+        {%- include 'breadcrumbs' -%}  
+      {%- endif -%}
+      
+      {%- if enable_sorting -%}
+        {% include 'collection-sorting' %}
+      {%- endif -%}
+
+      {% paginate collection.products by 12 %}
+        
+          <div class="grid__item">
+            <div class="grid--full" id="collection__items">
+              {% if collection_count > 0 %}
+                {% if collection.products_count > 0 %}
+                  
+                  {% comment %} Infinity scrolling {% endcomment %}
+                  <div id="AjaxinateLoop">
+                    {% for product in collection.products %}
+                      {% include 'product-grid-item', collection_count: ‘collection.all_products_count’ %}
+                    {% endfor %}
+                  </div>
+
+                {% else %}
+                  <div class="grid__item text-center collection--no-results">
+                    <p class="text-center no-matches">{{ 'collections.general.no_matches_by_filter' | t : products_count: collection.products_count }}</p>
+                    {%- if enable_filters and filter_tags != blank -%}
+                      <button class="reset-filters js-reset-filters">{% include 'icon-close' %} {{ 'products.general.reset' | t }}</button>
+                    {%- endif -%}
+                  </div>
+                {% endif %}
+              {% elsif collection.handle == 'all' and collection_count == 0 %}
+                {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
+                {% include 'onboarding-empty-collection' %}
+              {% elsif collection.handle != 'all' and collection_count == 0 %}
+                <div class="grid__item text-center collection--no-results">
+                  <h2 class="text-center">{{ 'collections.general.no_matches' | t }}</h2>
+                  <a href="/" class="btn" >{{ 'general.404.button_text' | t }}</a>
+                </div>
+              {% endif %}
+            </div>
+            
+            <div id="AjaxinatePagination" class="pagination">
+              {% if paginate.next %}
+                <div class="pagination__loading">
+                  <a href="{{ paginate.next.url }}">{{ 'collections.pagination.loading' | t }}<span class="dots dots--animated"><span>.</span><span>.</span><span>.</span></span></a>
+                </div>
+              {% endif %}
+            </div>
+
+            {%- if subcollectionsPosition == 'bottom' -%}
+              {% include 'sub-collections' %}
+            {%- endif -%}
+          </div>
+        
+      {% endpaginate %}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Collection pages",
+  "class": "collection-section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Subcollections"
+    },
+    {
+      "type": "select",
+      "label": "Show subcollections",
+      "id": "subcollections",
+      "default": "hidden",
+      "options": [
+        { "label": "Top", "value": "top" },
+        { "label": "Bottom", "value": "bottom" },
+        { "label": "Hidden", "value": "hidden" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "subcollections_per_row",
+      "label": "Items per row",
+      "step": 1,
+      "max": 5,
+      "min": 3,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Filters and sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_collection_sorting",
+      "label": "Enable collection sorting",
+      "default": true
+    },
+    {
+      "type": "select",
+      "label": "Filter mode",
+      "id": "filter_mode",
+      "info": "Filters by group requires specific tag formatting. [Learn more](https://help.shopify.com/manual/using-themes/themes-by-shopify/supply#product-tips-tips-specific)",
+      "default": "tag",
+      "options": [
+        { "label": "Hidden", "value": "hidden" },
+        { "label": "By tag", "value": "tag" },
+        { "label": "By group", "value": "group" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "position_filters",
+      "label": "Position",
+      "default": "left",
+      "options": [
+        { "label": "Top", "value": "top" },
+        { "label": "Left", "value": "left" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Banner image"
+    },
+    {
+      "type": "select",
+      "id": "banner_height",
+      "label": "Banner height",
+      "options": [
+          {
+            "value": "one-hundred",
+            "label": "Full screen height"
+          },
+          {
+            "value": "original-height",
+            "label": "Image height"
+          },
+          {
+            "value": "big",
+            "label": "750px"
+          },
+          {
+            "value": "normal",
+            "label": "650px"
+          },
+          {
+            "value": "small",
+            "label": "550px"
+          }
+        ],
+        "default": "normal"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "banner_text_position",
+      "label": "Text position",
+      "default": "center",
+      "options": [
+        { "label": "Left", "value": "left" },
+        { "label": "Center", "value": "center" },
+        { "label": "Right", "value": "right" },
+        { "label": "Bottom left", "value": "bottom-left" },
+        { "label": "Bottom right", "value": "bottom-right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading size",
+      "unit": "px",
+      "step": 4,
+      "min": 40,
+      "max": 64,
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Text size",
+      "unit": "px",
+      "step": 2,
+      "min": 16,
+      "max": 28,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "banner_color_text",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "banner_color_overlay",
+      "label": "Overlay",
+      "default": "#222222"
+    },
+    {
+      "type": "range",
+      "id": "banner_overlay_opacity",
+      "label": "Overlay opacity",
+      "step": 1,
+      "max": 100,
+      "min": 0,
+      "unit": "%",
+      "default": 10
+    }
+  ]
+}
+{% endschema %}

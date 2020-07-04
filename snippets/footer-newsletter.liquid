@@ -1,0 +1,23 @@
+{% form 'customer' %}
+    {% if form.posted_successfully? %}
+      <div class="newsletter--form">
+        <div class="note form-success">{{ 'general.newsletter_form.newsletter_success' | t }}</div>
+      </div>
+    {% elsif form.errors %}
+      {{ form.errors | default_errors }}
+    {% endif %}
+
+      <input type="hidden" name="contact[accepts_marketing]" value="true">
+      <div class="newsletter--form">
+        <div class="input-group">
+
+            <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email' | t }}" name="contact[email]" id="mail" class="input-group-field" aria-label="{{ 'general.newsletter_form.email' | t }}" autocorrect="off" autocapitalize="off">
+
+            <span class="input-group-btn">
+              <button type="submit" name="subscribe" id="subscribe" value="">
+                <i class = "custom-icon-long-arrow"></i>
+              </button>
+            </span>                    
+        </div>
+      </div>
+{% endform %}

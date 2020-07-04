@@ -1,0 +1,129 @@
+{% comment %} Settings {% endcomment %}
+{% assign blogArticles = blogs[section.settings.blogName].articles %}
+{% assign blogLink = blogs[section.settings.blogName].url %}
+{% assign bg_color = section.settings.bg_color | default: '#fafafa' %}
+
+{% assign title = section.settings.title %}
+{% assign articlesCount = 4 | plus: 0 %}
+
+{% assign blog_count = 0 %}
+
+{% if section.settings.blogName != blank %}
+{% for article in blogArticles limit: articlesCount %}
+{% assign blog_count = blog_count | plus : 1%}
+{% endfor %}
+{% endif %}
+
+{% case blog_count %}
+  {% when 1 %}
+ 	 {% assign blog_width = 'small--one-whole medium--one-whole large--one-whole' %}
+  {% when 2 %}
+ 	 {% assign blog_width = 'small--one-whole medium--one-half large--one-half' %}
+  {% when 3 %}
+ 	 {% assign blog_width = 'small--one-whole medium--one-third large--one-third' %}
+  {% when 4 %}
+ 	 {% assign blog_width = 'small--one-whole medium--one-half large--one-quarter' %}
+  {% else %}
+ 	 {% assign blog_width = 'small--one-whole medium--one-half large--one-quarter' %}
+{% endcase %}
+
+
+{% comment %} Section {% endcomment %}
+<section data-section-type="blog-posts" class="featured-blog wrapper" data-section-id="{{ section.id }}" style="background: {{ bg_color }};">
+    <div>
+        {% if title != blank %}
+            <h2 class = "text-center">{{ title }}</h2>
+        {% endif %}
+
+        <div class="featured-blog__posts featured-blog__slider-mobile">
+            {% if section.settings.blogName == blank %}
+                {% for i in (1..articlesCount) %}
+      		    <div class="featured-blog__post {{blog_width}}">
+                    <a href="#!" title="{{article.title}}" aria-label = "{{ article.title }}">
+                        <div class="svg-placeholder">
+                            {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+                            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg-filled' }}
+                        </div>
+                        <div class="featured-blog__content onboarding-blog-content">
+                            <p class ="h5" >Blog post title</p>
+                            <p class ="featured-blog__date" >Feb. 15, {{ 'now' | date: '%Y' }}</p>
+                            <p>Once you create a blog post or choose a blog, its content will appear here.</p>
+                        </div>
+                    </a>
+        		  </div>
+                {% endfor %}
+            {% else %}
+                {% for article in blogArticles limit: articlesCount %}
+                {% assign image = article.image %}
+          		<div class="featured-blog__post {% if image == blank %}featured-blog__post--no-image{% endif %} {{blog_width}}">
+                    <a href="{{ article.url }}" aria-label = "{{ article.title }}" title="{{ article.title }}">
+
+                    {% unless image == blank %}
+                        <div class="featured-blog__article_image">
+                            <div class="featured-blog__article_image-img lazyload"
+                                {% if article.image %}      
+                                data-bgset="{% include 'bgset', image: article.image %}"
+                                data-sizes="auto"
+                                data-parent-fit="cover"
+                                {% endif %}
+                            >
+                            </div>
+                            <span class="loader"></span>
+
+                            <noscript>
+                                <div class="featured-blog__article_image-img"
+                                    {% if article.image %}      
+                                    style="background-image: url( {{ article.image | img_url: '1024x' }} );"
+                                    {% endif %}
+                                >
+                                </div>
+                            </noscript>
+                        </div>
+                    {% endunless %}
+
+                    <div class = "featured-blog__content">                        
+                        <p class = "h5">{{ article.title }}</p>
+                        <p class= "featured-blog__date">{{ article.published_at | date: "%B %d, %Y" }}</p>
+                        <p class= "excerpt">{{ article.excerpt_or_content | strip_html | truncatewords: 10 }}</p>
+                    </div>
+                    </a>
+           		 </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% comment %} Schema {% endcomment %}
+{% schema %}
+{
+    "name": "Blog posts",
+    "settings": [ 
+        {
+            "type": "header",
+            "content": "Blog"
+        },
+        {
+            "type": "blog",
+            "id": "blogName",
+            "label": "Select a blog"
+        }, 
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default":"Our Blog"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background",
+          "default": "#fafafa"
+        } 
+    ],
+    "presets": [ {
+        "category": "Blog",
+        "name": "Blog posts"
+    } ]
+}
+{% endschema %}

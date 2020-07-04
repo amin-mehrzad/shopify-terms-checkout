@@ -1,0 +1,225 @@
+<!-- /sections/footer.liquid -->
+{%- assign color_text = section.settings.color_text | default: '#666' -%}
+{%- assign color_bg = section.settings.color_bg | default: '#fff' -%}
+
+<style>
+	.site-footer { background: {{ color_bg }}; }
+	.site-footer p,
+	.shopify-link span,
+	.shopify-link a,
+	.footer-link,
+	.article-excerpt a,
+	.payment-icon-list,
+	.social-sharing-wrapper i,
+	#shopify-section-footer h5 { color: {{ color_text }}; }
+	#mail::-webkit-input-placeholder { color: {{ color_text | color_modify: 'alpha', 0.65 }}; }
+	#mail::-moz-placeholder { color: {{ color_text | color_modify: 'alpha', 0.65 }}; }
+	#mail:-ms-input-placeholder { color: {{ color_text | color_modify: 'alpha', 0.65 }}; }
+	#mail:-moz-placeholder { color: {{ color_text | color_modify: 'alpha', 0.65 }}; }
+	#mail { color: {{ color_text }}; border-color: {{ color_text }}; }
+	#subscribe { background: {{ color_text }}; border-color: {{ color_text }}; }
+	#subscribe .custom-icon-long-arrow { color: {{ color_bg }}; }
+	#subscribe:hover { background: {{ color_bg }}; }
+	#subscribe:hover .custom-icon-long-arrow { color: {{ color_text }}; }
+</style>
+<footer class="site-footer" role="contentinfo"  data-section-id="{{ section.id }}"  data-section-type="footer">
+	<div class="grid--full wrapper">
+
+		{%- for block in section.blocks -%}
+			{%- case block.type -%}
+
+			{%- when 'logo' -%}
+				<div class="grid__item large--one-quarter medium-down--one-whole" {{ block.shopify_attributes }}>
+					<a href="{{ shop.url }}" itemprop="url" class="footer-logo">
+					{%- if block.settings.image != blank -%}
+						{%- assign image = block.settings.image -%}
+						{%- assign image_widths = '100,295,394,590,700,800' -%}
+						{%- include 'theme-rias' -%}
+						 <img
+							 class="lazyload logo--footer"
+							 data-src="{{ image_url_pattern }}"
+							 data-widths= "[{{ image_widths }}]"
+							 data-aspectratio="{{image.aspect_ratio }}"
+							 data-sizes="auto"
+							 alt="{{ shop.name }}"
+							 itemprop="logo"
+							 width="{{ block.settings.logo_width }}"
+							 >
+						<span class="loader"></span>
+
+						<noscript>
+							<img
+							src="{{ image | img_url: '1024x' }}" alt="{{ image.alt | escape }}"
+							alt="{{shop.name}}"
+							itemprop="logo"
+							width="{{ block.settings.logo_width }}">
+						</noscript>
+					{%- else -%}
+						<style> .footer-logo .placeholder-svg { width: {{ block.settings.logo_width | append: 'px' }}; height: {{ block.settings.logo_width | append: 'px' }}; }</style>
+						<div class="placeholder-svg">
+							{{ 'image' | placeholder_svg_tag: 'placeholder-svg-filled' }}
+						</div>
+					{%- endif -%}
+					</a>
+
+					{%- if block.settings.show_social_links -%}
+						{%- include 'footer-social' -%}
+					{%- endif -%}
+					{%- if block.settings.show_payment_icons -%}
+						{%- include 'footer-payment' -%}
+					{%- endif -%}
+				</div>
+
+			{%- when 'link' -%}
+				<div class="grid__item large--one-quarter medium-down--one-whole" {{ block.shopify_attributes }}>
+					<div class="grid--full">
+						{%- for link in linklists[block.settings.foot-menu].links -%}
+						<div class="grid__item large--one-whole medium-down--one-half">
+							<a class="footer-link" href="{{ link.url }}">{{ link.title }}</a>
+						</div>
+						{%- endfor -%}
+					</div>
+				</div>
+
+			{%- when 'blog' -%}
+				<div class="grid__item large--one-quarter medium-down--one-whole" {{ block.shopify_attributes }}>
+					{%- assign article = blogs[block.settings.blog_widget_select].articles.first -%}
+					<a class="article-title" href="{{ article.url }}" title="{{ article.title }}"> {{ article.title }}</a>
+					{%- if article.excerpt.size > 0 -%}
+					<p class="article-excerpt">{{ article.excerpt | link_to: article.url }}</p>
+					{%- else -%}
+					<p class="article-excerpt">{{ article.content | strip_html | truncatewords: 12 | link_to: article.url }}</p>
+					{%- endif -%}
+				</div>
+
+			{%- when 'newsletter' -%}
+				<div class="grid__item large--one-quarter medium-down--one-whole" {{ block.shopify_attributes }}>
+					<div class="h5">{{ block.settings.newsletter_title }}</div>
+					{%- include 'footer-newsletter' -%}
+				</div>
+
+			{%- when 'text' -%}
+				<div class="grid__item large--one-quarter medium-down--one-whole footer-text" {{ block.shopify_attributes }}>
+					<div>{{ block.settings.footer_text }}</div>
+				</div>
+			{%- endcase -%}
+		{%- endfor -%}
+	</div>
+
+	<div class="grid--full wrapper large--text-center medium--text-left">
+		{%- include 'footer-copyright' -%}
+	</div>
+
+</footer>
+
+{% schema %}
+{
+	"name": "Footer",
+	"max_blocks": 4,
+	"settings": [
+		{
+			"type": "header",
+			"content": "Colors"
+		},
+		{
+			"type": "color",
+			"id": "color_text",
+			"label": "Text",
+			"default": "#666"
+		},
+		{
+			"type": "color",
+			"id": "color_bg",
+			"label": "Background",
+			"default": "#fff"
+		}
+	],
+	"blocks": [
+		{
+			"type": "link",
+			"name": "Link list",
+			"settings": [
+				{
+					"type": "link_list",
+					"id": "foot-menu",
+					"label": "Link list",
+					"default": "footer",
+					"info":"This menu won't show dropdown items"
+				}
+			]
+		},
+		{
+			"type": "text",
+			"name": "Text",
+			"settings": [
+				{
+					"type": "richtext",
+					"id": "footer_text",
+					"label": "Text",
+					"default": "<p>Leave your customers with a final message about your brand in this rich text block.</p>"
+				}
+			]
+		},
+		{
+			"type": "blog",
+			"name": "Blog",
+			"settings": [
+				{
+					"type": "blog",
+					"id": "blog_widget_select",
+					"label": "Choose blog to show recent article excerpts."
+				}
+			]
+		},
+		{
+			"type": "newsletter",
+			"name": "Newsletter",
+			"settings": [
+				{
+					"type": "paragraph",
+					"content": "Subscribers are added in the Customers section of your site admin."
+				},
+				{
+					"type": "richtext",
+					"id": "newsletter_title",
+					"label": "Heading"
+				}
+			]
+		},
+		{
+			"type": "logo",
+			"name": "Logo",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Logo"
+				},
+				{
+					"type": "range",
+					"id": "logo_width",
+					"label": "Custom logo width (in pixels)",
+					"min":25,
+					"max":400,
+					"default": 100,
+					"step":5,
+					"unit":"px"
+				},
+				{
+					"type": "checkbox",
+					"id": "show_social_links",
+					"label": "Show social icons",
+					"info":"Edit your social settings and accounts in Theme Settings",
+					"default": true
+				},
+				{
+					"type": "checkbox",
+					"id": "show_payment_icons",
+					"label": "Show payment icons",
+					"default": true
+				}
+			]
+		}
+	]
+}
+{% endschema %}
