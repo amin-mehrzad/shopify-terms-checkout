@@ -41,9 +41,13 @@
     {% if settings.enable_yotpo and settings.yotpo_ID != '' %}
       {% include 'yotpo-script' %}
     {% endif %}
+    
+    {{ 'checkout-popup.js'  | asset_url | script_tag     }}
+
   </head>
 
   <body id="{{ page_title | handle }}" class="{% if settings.header_bg_color == 'rgba(0,0,0,0)' %}full-header{% endif%} {% if customer %} customer-logged-in {% endif %}template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }} no-outlines {% if settings.show_body_padding %}body--show-padding{% endif %} {% if settings.show_spacer_lines %}body--show-spacer-lines{% else %}body--hide-spacer-lines{% endif %} {% if settings.quick_button == 'buy' %}quick-buy-enabled{% elsif settings.quick_button == 'view' %}quick-view-enabled{% endif %}">
+    {% render 'v-age-check' %}
     <div class = "block-body"></div>
     {% section 'popup' %}
     {% section 'announcement-bar' %}
