@@ -1,0 +1,93 @@
+
+<div id="checkout-popup-background">
+  <div id="checkout-popup-prompt" class="modal-terms">
+    <h1 id="checkout-popupTitle">
+    </h1>
+    <p>
+      To ensure your safety and optimal candle performance, our candle wicks must be kept trimmed to 1/8" at all times. To trim the wick, make sure the candle is extinguished and vessel is cool. Using a sharp pair of scissors, trim the candle wick to a 
+1/8" length, making sure to discard any debris from the wax surface. Do not burn candle for longer than 2 hours at a time without trimming the wick.
+
+Failure to keep the wick trimmed to specified length can result in improper burning, exaggerated flame height, excessive heat, sooting, black smoke, and a potential fire hazard.  
+    </p>
+    <ul>
+      <li>Always burn a candle within clear sight </li>
+<li>Keep away from drapery, flammable objects and materials </li>
+<li>Keep away from children and pets </li>
+<li>Place on a stable, heat-resistant surface </li>
+<li>Do not burn candles for longer than 2 hours at a time </li>
+<li>Allow glass to cool completely before handling. </li>
+    </ul>
+<p>
+Bougie Burlesque and its manufacturers are not liable for damages caused by improper use. Please click below to acknowledge your understanding of these directions.
+    </p>
+    <button id="submit_checkout-terms" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block">Yes</button> 
+    <span style="padding: 0 4px">or</span>
+    <a href="http://google.com/" id="button-exit" name="button-exit">no</a>
+  </div>
+</div>
+
+<script>
+ function ageCheck() {
+   var min_age = {{ age }};  // Set the minimum age. 
+   var year =   parseInt(document.getElementById('byear').value);
+   var month =  parseInt(document.getElementById('bmonth').value);
+   var day =    parseInt(document.getElementById('bday').value);
+   var theirDate = new Date((year + min_age), month, day);
+   var today = new Date;
+   if ((today.getTime() - theirDate.getTime()) < 0) {
+     window.location = 'http://google.com'; //enter domain url where you would like the underaged visitor to be sent to.
+   } else {
+     var days = 14; //number of days until they must go through the age checker again.
+     var date = new Date();
+     date.setTime(date.getTime()+(days*24*60*60*1000));
+     var expires = "; expires="+date.toGMTString();
+     document.cookie = 'isAnAdult=true;'+expires+"; path=/";
+     location.reload();
+   };
+  };
+  
+// var isAnAdult = readCookie('isAnAdult');
+//  if ( true) {
+ //   document.write("<style> #checkout-popup-background { display: none; }</style>");
+ // }; 
+</script>
+<style>
+	.modal-terms {
+		background:#fff;
+		border-radius: 2px;
+		box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+		width: 750px;
+		height: auto;
+		margin: 0 auto;
+		padding: 20px 25px 25px 25px;
+		position: relative;
+		top: 25%;
+		z-index: 1000000;
+	}
+	.modal-terms p, .modal-terms h1 {
+ 		color: #555555;
+	}
+	#checkout-popup-background {
+  		background: url("{{ 'age-check-background.jpg' | asset_url }}") no-repeat center center fixed rgba(5,5,5,.75);
+  		-webkit-background-size: cover;
+  		-moz-background-size: cover;
+  		-o-background-size: cover;
+  		background-size: cover;
+  		width: 100%;
+  		height: 100%;
+  		position: fixed;
+  		left: 0;
+  		top: 0;
+  		z-index: 9999999;
+          
+          display:none;
+	}
+	.modal-terms select {
+    	float: left;
+    	margin-right: 10px;
+    }
+  	#checkout-popupTitle {
+  		font-size:32px;
+    	text-align:center;
+  	}
+</style>
