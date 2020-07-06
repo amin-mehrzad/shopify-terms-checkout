@@ -7,6 +7,7 @@ window.onload = function () {
 
     var bodyElement = document.getElementsByTagName('body')[0];
     var bodyLastClassName = bodyElement.className;
+  	var checkoutTermModal = document.getElementById('checkout-popup-background');
     window.setInterval(function () {
         //  console.log('hi');
 
@@ -17,11 +18,15 @@ window.onload = function () {
 
             var checkoutDrawerButton = document.body.getElementsByClassName('btn btn--full cart__checkout drawer-button')[0];
 
-            console.log(checkoutDrawerButton);
+          //  console.log(checkoutDrawerButton);
 
-            checkoutDrawerButton.onclick = function() {
-                alert("button was clicked");
-             }​;
+            checkoutDrawerButton.onclick = function(e) {
+             //  here--->  alert("button was clicked");
+              e.preventDefault();
+              checkoutTermModal.style.display = "block";
+
+
+             }
 
             // if (checkoutDrawerButton.clicked == true)
             //     alert('test');
