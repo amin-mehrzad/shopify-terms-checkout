@@ -20,31 +20,20 @@ Failure to keep the wick trimmed to specified length can result in improper burn
 <p>
 Bougie Burlesque and its manufacturers are not liable for damages caused by improper use. Please click below to acknowledge your understanding of these directions.
     </p>
-    <button id="submit_checkout-terms" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block">Yes</button> 
+    <button id="submit-checkout-terms" class="button-enter btn styled-submit" onclick="agreeTerms()" style="display:inline-block">I Agree</button> 
     <span style="padding: 0 4px">or</span>
-    <a href="http://google.com/" id="button-exit" name="button-exit">no</a>
+    <a href="https://bougieburlesque.com" id="button-exit" name="button-exit">I don't</a>
   </div>
 </div>
 
 <script>
- function ageCheck() {
-   var min_age = {{ age }};  // Set the minimum age. 
-   var year =   parseInt(document.getElementById('byear').value);
-   var month =  parseInt(document.getElementById('bmonth').value);
-   var day =    parseInt(document.getElementById('bday').value);
-   var theirDate = new Date((year + min_age), month, day);
-   var today = new Date;
-   if ((today.getTime() - theirDate.getTime()) < 0) {
-     window.location = 'http://google.com'; //enter domain url where you would like the underaged visitor to be sent to.
-   } else {
-     var days = 14; //number of days until they must go through the age checker again.
-     var date = new Date();
-     date.setTime(date.getTime()+(days*24*60*60*1000));
-     var expires = "; expires="+date.toGMTString();
-     document.cookie = 'isAnAdult=true;'+expires+"; path=/";
-     location.reload();
-   };
-  };
+            
+
+
+ function agreeTerms(){
+   var checkoutDrawerButton = document.getElementsByClassName('btn btn--full cart__checkout drawer-button')[0];
+	checkoutDrawerButton.click();
+     }
   
 // var isAnAdult = readCookie('isAnAdult');
 //  if ( true) {
